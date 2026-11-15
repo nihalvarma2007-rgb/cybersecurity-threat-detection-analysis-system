@@ -1,0 +1,3130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Cybersecurity Threat Detection & Analysis System - AI Security Assistant</title>
+
+    <style>
+        /* =====================================================
+           RESET & THEME TOKENS
+        ===================================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #090c11;
+            --bg-glow-1: rgba(45, 215, 196, 0.16);
+            --bg-glow-2: rgba(45, 215, 196, 0.10);
+            --grid-line: rgba(45, 215, 196, 0.06);
+            --text-main: #ffffff;
+            --text-dim: #94a3b8;
+            --text-faint: #64748b;
+            --panel: rgba(8, 22, 15, 0.72);
+            --panel-strong: rgba(6, 20, 13, 0.85);
+            --border: rgba(45, 215, 196, 0.14);
+            --border-soft: rgba(45, 215, 196, 0.09);
+            --accent-1: #16a394;
+            --accent-2: #2dd7c4;
+            --bot-bubble: rgba(13, 27, 24, 0.9);
+            --bot-bubble-text: #cbd5e1;
+            --input-bg: rgba(9, 12, 17, 0.65);
+            --danger: #ff6b81;
+        }
+
+        [data-theme="light"] {
+            --bg: #f3f6f5;
+            --bg-glow-1: rgba(22, 163, 148, 0.10);
+            --bg-glow-2: rgba(22, 163, 148, 0.08);
+            --grid-line: rgba(22, 163, 148, 0.08);
+            --text-main: #0b1420;
+            --text-dim: #47586b;
+            --text-faint: #7c8ba1;
+            --panel: rgba(255, 255, 255, 0.78);
+            --panel-strong: rgba(255, 255, 255, 0.92);
+            --border: rgba(22, 163, 148, 0.22);
+            --border-soft: rgba(22, 163, 148, 0.16);
+            --accent-1: #0f8f81;
+            --accent-2: #16a394;
+            --bot-bubble: rgba(255, 255, 255, 0.95);
+            --bot-bubble-text: #1e2b3a;
+            --input-bg: rgba(255, 255, 255, 0.9);
+            --danger: #e0435a;
+        }
+
+        /* =====================================================
+           BODY
+        ===================================================== */
+
+        body {
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: var(--bg);
+
+            background-image:
+                radial-gradient(circle at 50% 0%, var(--bg-glow-1), transparent 55%),
+                radial-gradient(circle at 100% 100%, var(--bg-glow-2), transparent 50%),
+                repeating-linear-gradient(0deg,
+                    var(--grid-line) 0px,
+                    var(--grid-line) 1px,
+                    transparent 1px,
+                    transparent 100px),
+                repeating-linear-gradient(90deg,
+                    var(--grid-line) 0px,
+                    var(--grid-line) 1px,
+                    transparent 1px,
+                    transparent 100px);
+
+            background-attachment: fixed;
+            color: var(--text-main);
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+
+        /* =====================================================
+           HEADER
+        ===================================================== */
+
+        header {
+            height: 72px;
+            padding: 0 34px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--panel-strong);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h1 {
+            font-size: 21px;
+            color: var(--text-main);
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        nav a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        nav a:hover {
+            color: var(--accent-2);
+        }
+
+        #themeToggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-dim);
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #themeToggle:hover {
+            color: var(--text-main);
+            border-color: var(--accent-2);
+        }
+
+        /* =====================================================
+           MAIN
+        ===================================================== */
+
+        main {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 22px 60px;
+        }
+
+        /* =====================================================
+           PAGE HEADER
+        ===================================================== */
+
+        .page-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 25px;
+        }
+
+        .page-header h2 {
+            font-size: 31px;
+            margin-bottom: 9px;
+        }
+
+        .page-header p {
+            color: var(--text-dim);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .icon-button {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 13px;
+            border-radius: 9px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-dim);
+            cursor: pointer;
+            font-size: 12.5px;
+            white-space: nowrap;
+        }
+
+        .icon-button:hover {
+            color: var(--text-main);
+            background: rgba(45, 215, 196, 0.10);
+            border-color: var(--accent-2);
+        }
+
+        /* =====================================================
+           CHAT CARD
+        ===================================================== */
+
+        .chat-card {
+            position: relative;
+            height: calc(100vh - 250px);
+            min-height: 520px;
+            display: flex;
+            flex-direction: column;
+            background: var(--panel);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            overflow: hidden;
+        }
+
+        /* =====================================================
+           CHAT HEADER
+        ===================================================== */
+
+        .chat-header {
+            padding: 15px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            background: var(--panel-strong);
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        .chat-header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .bot-icon {
+            position: relative;
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: rgba(45, 215, 196, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 23px;
+        }
+
+        .status-dot {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            background: #34d399;
+            border: 2px solid var(--panel-strong);
+        }
+
+        .chat-header strong {
+            display: block;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .chat-header small {
+            color: var(--text-faint);
+            font-size: 12px;
+        }
+
+        /* =====================================================
+           CHAT MESSAGES
+        ===================================================== */
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 25px;
+        }
+
+        .message-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 18px;
+            align-items: flex-end;
+        }
+
+        .message-row.user {
+            justify-content: flex-end;
+        }
+
+        .message-row.bot {
+            justify-content: flex-start;
+        }
+
+        .avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .message-row.bot .avatar {
+            background: rgba(45, 215, 196, 0.14);
+        }
+
+        .message-row.user .avatar {
+            background: rgba(45, 215, 196, 0.28);
+        }
+
+        .message-stack {
+            display: flex;
+            flex-direction: column;
+            max-width: 78%;
+        }
+
+        .message-row.user .message-stack {
+            align-items: flex-end;
+        }
+
+        .message-bubble {
+            padding: 13px 16px;
+            border-radius: 13px;
+            font-size: 14px;
+            line-height: 1.65;
+            white-space: pre-wrap;
+        }
+
+        .message-row.bot .message-bubble {
+            background: var(--bot-bubble);
+            border: 1px solid var(--border-soft);
+            color: var(--bot-bubble-text);
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-row.user .message-bubble {
+            background: linear-gradient(135deg,
+                    var(--accent-1),
+                    var(--accent-2));
+            color: #ffffff;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 5px;
+            font-size: 11px;
+            color: var(--text-faint);
+        }
+
+        .copy-btn {
+            border: none;
+            background: none;
+            color: var(--text-faint);
+            cursor: pointer;
+            font-size: 11px;
+            padding: 0;
+        }
+
+        .copy-btn:hover {
+            color: var(--accent-2);
+        }
+
+        /* =====================================================
+           FOLLOW-UP CHIPS
+        ===================================================== */
+
+        .followups {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 4px 0 18px 38px;
+        }
+
+        .followup-chip {
+            padding: 6px 10px;
+            border-radius: 20px;
+            border: 1px dashed var(--border);
+            background: transparent;
+            color: var(--text-dim);
+            cursor: pointer;
+            font-size: 11.5px;
+        }
+
+        .followup-chip:hover {
+            color: var(--text-main);
+            border-color: var(--accent-2);
+            background: rgba(45, 215, 196, 0.08);
+        }
+
+        /* =====================================================
+           QUICK QUESTIONS
+        ===================================================== */
+
+        .quick-questions {
+            padding: 13px 20px;
+            border-top: 1px solid var(--border-soft);
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+        }
+
+        .quick-button {
+            flex-shrink: 0;
+            padding: 8px 11px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-dim);
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .quick-button:hover {
+            color: var(--text-main);
+            background: rgba(45, 215, 196, 0.10);
+            border-color: rgba(45, 215, 196, 0.25);
+        }
+
+        /* =====================================================
+           INPUT AREA
+        ===================================================== */
+
+        .chat-input-area {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 18px 20px;
+            background: var(--panel-strong);
+            border-top: 1px solid var(--border-soft);
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        #chatInput {
+            flex: 1;
+            min-width: 0;
+            height: 48px;
+            padding: 0 15px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            outline: none;
+            background: var(--input-bg);
+            color: var(--text-main);
+            font-size: 14px;
+        }
+
+        #chatInput:focus {
+            border-color: var(--accent-2);
+            box-shadow: 0 0 0 3px rgba(45, 215, 196, 0.16);
+        }
+
+        #chatInput::placeholder {
+            color: var(--text-faint);
+        }
+
+        #micButton {
+            width: 48px;
+            height: 48px;
+            flex-shrink: 0;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-dim);
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #micButton:hover {
+            color: var(--text-main);
+            border-color: var(--accent-2);
+        }
+
+        #micButton.listening {
+            color: #ffffff;
+            background: var(--danger);
+            border-color: var(--danger);
+        }
+
+        #sendChat {
+            height: 48px;
+            padding: 0 21px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg,
+                    var(--accent-1),
+                    var(--accent-2));
+            color: #ffffff;
+            font-weight: 700;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        #sendChat:hover {
+            opacity: 0.9;
+        }
+
+        #sendChat:disabled,
+        #chatInput:disabled,
+        #micButton:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .input-footer {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-faint);
+            padding: 0 2px;
+        }
+
+        /* =====================================================
+           TYPING INDICATOR
+        ===================================================== */
+
+        .typing {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 4px 10px 38px;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 3px;
+        }
+
+        .typing-dots span {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--text-faint);
+            animation: bounce 1.2s infinite ease-in-out;
+        }
+
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            60%,
+            100% {
+                transform: translateY(0);
+                opacity: 0.5;
+            }
+
+            30% {
+                transform: translateY(-4px);
+                opacity: 1;
+            }
+        }
+
+        .typing-label {
+            color: var(--text-faint);
+            font-size: 12px;
+            font-style: italic;
+        }
+
+        /* =====================================================
+           SCROLL TO BOTTOM
+        ===================================================== */
+
+        .scroll-bottom-btn {
+            position: absolute;
+            right: 20px;
+            bottom: 150px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: var(--panel-strong);
+            color: var(--text-dim);
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+        }
+
+        .scroll-bottom-btn.visible {
+            display: flex;
+        }
+
+        .scroll-bottom-btn:hover {
+            color: var(--text-main);
+            border-color: var(--accent-2);
+        }
+
+        /* =====================================================
+           BACK LINK
+        ===================================================== */
+
+        .back-link {
+            display: inline-block;
+            margin-top: 18px;
+            color: var(--accent-2);
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        /* =====================================================
+           MOBILE
+        ===================================================== */
+
+        @media (max-width: 700px) {
+
+            header {
+                padding: 0 18px;
+            }
+
+            nav a {
+                display: none;
+            }
+
+            main {
+                padding: 28px 15px 45px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .page-header h2 {
+                font-size: 27px;
+            }
+
+            .chat-card {
+                height: calc(100vh - 260px);
+                min-height: 480px;
+            }
+
+            .chat-messages {
+                padding: 18px;
+            }
+
+            .message-stack {
+                max-width: 88%;
+            }
+
+            .chat-input-area {
+                padding: 13px;
+            }
+
+            #sendChat {
+                padding: 0 16px;
+            }
+        }
+
+        @media (max-width: 450px) {
+
+            .input-row {
+                gap: 7px;
+            }
+
+            #chatInput {
+                min-width: 0;
+            }
+
+            #sendChat {
+                font-size: 12px;
+                padding: 0 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header>
+
+        <h1>Cybersecurity Threat Detection & Analysis System</h1>
+
+        <nav>
+
+            <a href="dashboard.html">Dashboard</a>
+
+            <a href="scanner.html">Scanner</a>
+
+            <a href="chatbot.html">AI Assistant</a>
+
+            <a href="ip-awareness.html">IP Awareness</a>
+
+            <button id="themeToggle" type="button" title="Toggle light / dark theme">
+                🌙
+            </button>
+
+        </nav>
+
+    </header>
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main>
+
+        <section class="page-header">
+
+            <div>
+
+                <h2>AI Security Assistant</h2>
+
+                <p>
+                    Ask SecureBot questions about cybersecurity,
+                    ethical hacking, network security and web security.
+                </p>
+
+            </div>
+
+            <div class="header-actions">
+
+                <button type="button" class="icon-button" id="exportChat" title="Export conversation as a text file">
+                    ⬇ Export
+                </button>
+
+                <button type="button" class="icon-button" id="clearChat" title="Clear conversation">
+                    🗑 Clear
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             CHAT
+        ================================================== -->
+
+        <section class="chat-card">
+
+            <!-- CHAT HEADER -->
+
+            <div class="chat-header">
+
+                <div class="chat-header-left">
+
+                    <div class="bot-icon">
+
+                        🤖
+
+                        <span class="status-dot"></span>
+
+                    </div>
+
+                    <div>
+
+                        <strong>SecureBot AI</strong>
+
+                        <small>
+                            Cybersecurity & Ethical Hacking Assistant · Online
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- MESSAGES -->
+
+            <div class="chat-messages" id="chatMessages">
+            </div>
+
+
+            <!-- SCROLL TO BOTTOM -->
+
+            <button type="button" class="scroll-bottom-btn" id="scrollBottomBtn" title="Jump to latest message">
+                ↓
+            </button>
+
+
+            <!-- QUICK QUESTIONS -->
+
+            <div class="quick-questions" id="quickQuestions">
+
+                <button type="button" class="quick-button" data-question="What is ethical hacking?">
+                    Ethical Hacking
+                </button>
+
+                <button type="button" class="quick-button" data-question="What is Nmap?">
+                    Nmap
+                </button>
+
+                <button type="button" class="quick-button" data-question="What is penetration testing?">
+                    Penetration Testing
+                </button>
+
+                <button type="button" class="quick-button" data-question="What is phishing?">
+                    Phishing
+                </button>
+
+                <button type="button" class="quick-button" data-question="What is SQL injection?">
+                    SQL Injection
+                </button>
+
+                <button type="button" class="quick-button" data-question="What is XSS?">
+                    XSS
+                </button>
+
+                <button type="button" class="quick-button" data-question="What is a firewall?">
+                    Firewall
+                </button>
+
+                <button type="button" class="quick-button" data-question="What is encryption?">
+                    Encryption
+                </button>
+
+                <button type="button" class="quick-button" data-question="What is malware?">
+                    Malware
+                </button>
+
+                <button type="button" class="quick-button" data-question="What is a vulnerability?">
+                    Vulnerability
+                </button>
+
+            </div>
+
+
+            <!-- INPUT -->
+
+            <div class="chat-input-area">
+
+                <div class="input-row">
+
+                    <input type="text" id="chatInput" maxlength="300"
+                        placeholder="Ask me anything about cybersecurity..." autocomplete="off">
+
+                    <button type="button" id="micButton" title="Ask by voice">
+                        🎤
+                    </button>
+
+                    <button type="button" id="sendChat">
+                        Send
+                    </button>
+
+                </div>
+
+                <div class="input-footer">
+
+                    <span id="charCount">
+                        0 / 300
+                    </span>
+
+                    <span id="inputHint">
+                        Press Enter to send
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <a href="dashboard.html" class="back-link">
+            ← Back to Dashboard
+        </a>
+
+    </main>
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ===================================================== -->
+
+    <script>
+
+        /* =====================================================
+           ELEMENTS
+        ===================================================== */
+
+        const chatMessages =
+            document.getElementById("chatMessages");
+
+        const chatInput =
+            document.getElementById("chatInput");
+
+        const sendChat =
+            document.getElementById("sendChat");
+
+        const themeToggle =
+            document.getElementById("themeToggle");
+
+        const clearChat =
+            document.getElementById("clearChat");
+
+        const exportChat =
+            document.getElementById("exportChat");
+
+        const micButton =
+            document.getElementById("micButton");
+
+        const charCount =
+            document.getElementById("charCount");
+
+        const scrollBottomBtn =
+            document.getElementById("scrollBottomBtn");
+
+
+        const HISTORY_KEY =
+            "secureBotHistory";
+
+        const THEME_KEY =
+            "secureBotTheme";
+
+
+        let conversation = [];
+
+
+        /* =====================================================
+           THEME
+        ===================================================== */
+
+        function applyTheme(theme) {
+
+            document.documentElement.setAttribute(
+                "data-theme",
+                theme
+            );
+
+            themeToggle.textContent =
+                theme === "light"
+                    ? "☀️"
+                    : "🌙";
+
+            localStorage.setItem(
+                THEME_KEY,
+                theme
+            );
+        }
+
+
+        (function initTheme() {
+
+            const saved =
+                localStorage.getItem(THEME_KEY) || "dark";
+
+            applyTheme(saved);
+
+        })();
+
+
+        themeToggle.addEventListener(
+            "click",
+            function () {
+
+                const current =
+                    document.documentElement.getAttribute(
+                        "data-theme"
+                    ) === "light"
+                        ? "dark"
+                        : "light";
+
+                applyTheme(current);
+
+            }
+        );
+
+
+        /* =====================================================
+           TIME FORMAT
+        ===================================================== */
+
+        function formatTime(date) {
+
+            return date.toLocaleTimeString(
+                [],
+                {
+                    hour: "2-digit",
+                    minute: "2-digit"
+                }
+            );
+        }
+
+
+        /* =====================================================
+           ADD MESSAGE
+        ===================================================== */
+
+        function addMessage(
+            message,
+            sender,
+            save = true
+        ) {
+
+            const row =
+                document.createElement("div");
+
+            row.className =
+                "message-row " + sender;
+
+
+            const avatar =
+                document.createElement("div");
+
+            avatar.className =
+                "avatar";
+
+            avatar.textContent =
+                sender === "bot"
+                    ? "🤖"
+                    : "🧑";
+
+
+            const stack =
+                document.createElement("div");
+
+            stack.className =
+                "message-stack";
+
+
+            const bubble =
+                document.createElement("div");
+
+            bubble.className =
+                "message-bubble";
+
+            bubble.textContent =
+                message;
+
+
+            const meta =
+                document.createElement("div");
+
+            meta.className =
+                "message-meta";
+
+
+            const time =
+                document.createElement("span");
+
+            time.textContent =
+                formatTime(new Date());
+
+            meta.appendChild(time);
+
+
+            if (sender === "bot") {
+
+                const copyBtn =
+                    document.createElement("button");
+
+                copyBtn.className =
+                    "copy-btn";
+
+                copyBtn.type =
+                    "button";
+
+                copyBtn.textContent =
+                    "Copy";
+
+
+                copyBtn.addEventListener(
+                    "click",
+                    function () {
+
+                        navigator.clipboard
+                            .writeText(message)
+                            .then(function () {
+
+                                copyBtn.textContent =
+                                    "Copied!";
+
+                                setTimeout(
+                                    function () {
+
+                                        copyBtn.textContent =
+                                            "Copy";
+
+                                    },
+                                    1500
+                                );
+
+                            });
+
+                    }
+                );
+
+
+                meta.appendChild(copyBtn);
+            }
+
+
+            stack.appendChild(bubble);
+            stack.appendChild(meta);
+
+
+            if (sender === "bot") {
+
+                row.appendChild(avatar);
+                row.appendChild(stack);
+
+            } else {
+
+                row.appendChild(stack);
+                row.appendChild(avatar);
+
+            }
+
+
+            chatMessages.appendChild(row);
+
+            scrollToBottom();
+
+
+            if (save !== false) {
+
+                conversation.push({
+
+                    sender: sender,
+
+                    text: message,
+
+                    time: Date.now()
+
+                });
+
+                localStorage.setItem(
+                    HISTORY_KEY,
+                    JSON.stringify(conversation)
+                );
+            }
+        }
+
+
+        /* =====================================================
+           FOLLOW-UP CHIPS
+        ===================================================== */
+
+        function addFollowups(chips) {
+
+            if (!chips || chips.length === 0) {
+                return;
+            }
+
+
+            const wrap =
+                document.createElement("div");
+
+            wrap.className =
+                "followups";
+
+
+            chips.forEach(function (chip) {
+
+                const btn =
+                    document.createElement("button");
+
+                btn.type =
+                    "button";
+
+                btn.className =
+                    "followup-chip";
+
+                btn.textContent =
+                    chip;
+
+
+                btn.addEventListener(
+                    "click",
+                    function () {
+
+                        chatInput.value =
+                            chip;
+
+                        sendMessage();
+
+                    }
+                );
+
+
+                wrap.appendChild(btn);
+
+            });
+
+
+            chatMessages.appendChild(wrap);
+
+            scrollToBottom();
+        }
+
+
+        /* =====================================================
+           SCROLL HELPERS
+        ===================================================== */
+
+        function scrollToBottom() {
+
+            chatMessages.scrollTop =
+                chatMessages.scrollHeight;
+        }
+
+
+        chatMessages.addEventListener(
+            "scroll",
+            function () {
+
+                const distanceFromBottom =
+                    chatMessages.scrollHeight -
+                    chatMessages.scrollTop -
+                    chatMessages.clientHeight;
+
+                scrollBottomBtn.classList.toggle(
+                    "visible",
+                    distanceFromBottom > 150
+                );
+
+            }
+        );
+
+
+        scrollBottomBtn.addEventListener(
+            "click",
+            scrollToBottom
+        );
+
+
+        /* =====================================================
+           TYPING INDICATOR
+        ===================================================== */
+
+        function showTyping() {
+
+            const typing =
+                document.createElement("div");
+
+            typing.id =
+                "typingIndicator";
+
+            typing.className =
+                "typing";
+
+
+            typing.innerHTML =
+                '<div class="typing-dots">' +
+                '<span></span>' +
+                '<span></span>' +
+                '<span></span>' +
+                '</div>' +
+                '<span class="typing-label">' +
+                'SecureBot is thinking...' +
+                '</span>';
+
+
+            chatMessages.appendChild(typing);
+
+            scrollToBottom();
+        }
+
+
+        function hideTyping() {
+
+            const typing =
+                document.getElementById(
+                    "typingIndicator"
+                );
+
+            if (typing) {
+                typing.remove();
+            }
+        }
+
+
+        /* =====================================================
+           GET LAST SCAN
+        ===================================================== */
+
+        function getLastScan() {
+
+            const saved =
+                localStorage.getItem("lastScan");
+
+
+            if (!saved) {
+                return null;
+            }
+
+
+            try {
+
+                return JSON.parse(saved);
+
+            } catch (error) {
+
+                return null;
+            }
+        }
+
+
+        /* =====================================================
+           CYBERSECURITY KNOWLEDGE BASE
+        ===================================================== */
+
+        const knowledgeBase = [
+
+            {
+                match: [
+                    "cybersecurity",
+                    "cyber security"
+                ],
+
+                response:
+                    "Cybersecurity is the practice of protecting computers, networks, applications and data from unauthorized access, attacks, damage and misuse.\n\n" +
+
+                    "The main areas include:\n" +
+                    "• Network security\n" +
+                    "• Web and application security\n" +
+                    "• Identity and access management\n" +
+                    "• Cryptography\n" +
+                    "• Malware protection\n" +
+                    "• Security monitoring\n" +
+                    "• Vulnerability management\n" +
+                    "• Incident response\n\n" +
+
+                    "The main goal is to protect confidentiality, integrity and availability of information.",
+
+                followups: [
+                    "What is ethical hacking?",
+                    "What is a vulnerability?",
+                    "What is penetration testing?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "ethical hacking",
+                    "ethical hacker"
+                ],
+
+                response:
+                    "Ethical hacking is authorized security testing performed to find weaknesses before malicious attackers can exploit them.\n\n" +
+
+                    "An ethical hacker must have permission from the system owner and must follow a defined scope.\n\n" +
+
+                    "Typical stages are:\n" +
+                    "1. Reconnaissance - collecting information about the authorized target.\n" +
+                    "2. Scanning - identifying hosts, ports and services.\n" +
+                    "3. Enumeration - collecting detailed information about discovered services.\n" +
+                    "4. Vulnerability analysis - identifying possible weaknesses.\n" +
+                    "5. Controlled testing - safely demonstrating an approved weakness.\n" +
+                    "6. Reporting - documenting findings and recommendations.\n" +
+                    "7. Retesting - checking whether the problem was fixed.\n\n" +
+
+                    "Ethical hacking should only be performed on systems for which you have permission.",
+
+                followups: [
+                    "What is penetration testing?",
+                    "What is reconnaissance?",
+                    "What is vulnerability scanning?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "penetration testing",
+                    "pentesting",
+                    "pen testing"
+                ],
+
+                response:
+                    "Penetration testing is an authorized security assessment where testers simulate realistic attacks to identify and demonstrate security weaknesses.\n\n" +
+
+                    "Common types include:\n" +
+                    "• Black-box testing - little internal information is provided.\n" +
+                    "• Gray-box testing - limited internal information is provided.\n" +
+                    "• White-box testing - detailed internal information is provided.\n\n" +
+
+                    "A penetration test normally has a defined scope, rules of engagement, evidence collection and a final security report.",
+
+                followups: [
+                    "What is ethical hacking?",
+                    "What is vulnerability scanning?",
+                    "What is reconnaissance?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "vulnerability",
+                    "security vulnerability"
+                ],
+
+                response:
+                    "A vulnerability is a weakness in software, hardware, configuration or a process that could potentially be used to compromise security.\n\n" +
+
+                    "Examples include:\n" +
+                    "• Outdated software\n" +
+                    "• Weak authentication\n" +
+                    "• Incorrect access controls\n" +
+                    "• SQL injection\n" +
+                    "• Cross-site scripting\n" +
+                    "• Misconfigured servers\n" +
+                    "• Exposed sensitive information\n\n" +
+
+                    "A vulnerability does not necessarily mean an attack has happened. It means there is a weakness that should be assessed and fixed.",
+
+                followups: [
+                    "What is CVE?",
+                    "What is vulnerability scanning?",
+                    "What is CVSS?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "cve",
+                    "common vulnerabilities and exposures"
+                ],
+
+                response:
+                    "CVE stands for Common Vulnerabilities and Exposures.\n\n" +
+
+                    "A CVE identifier is a standardized reference for a publicly known cybersecurity vulnerability.\n\n" +
+
+                    "Security teams use CVE information to identify affected software, investigate exposure and prioritize remediation.\n\n" +
+
+                    "A CVE identifier alone does not mean every system is vulnerable. The affected software version and configuration must also be considered.",
+
+                followups: [
+                    "What is CVSS?",
+                    "What is a vulnerability?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "cvss",
+                    "common vulnerability scoring system"
+                ],
+
+                response:
+                    "CVSS stands for Common Vulnerability Scoring System.\n\n" +
+
+                    "It provides a standardized way to describe the severity of a vulnerability.\n\n" +
+
+                    "CVSS considers factors related to exploitability and potential impact on confidentiality, integrity and availability.\n\n" +
+
+                    "Organizations can combine CVSS information with their own business context when prioritizing vulnerabilities.",
+
+                followups: [
+                    "What is CVE?",
+                    "What is a vulnerability?"
+                ]
+            },
+
+
+            /* ================= WEB SECURITY ================= */
+
+            {
+                match: [
+                    "https",
+                    "ssl",
+                    "tls"
+                ],
+
+                response:
+                    "HTTPS is the secure version of HTTP. It uses TLS to protect communication between a browser and a web server.\n\n" +
+
+                    "HTTPS provides:\n" +
+                    "• Encryption - helps prevent others from reading traffic.\n" +
+                    "• Integrity - helps detect unauthorized modification of traffic.\n" +
+                    "• Authentication - certificates help verify the server identity.\n\n" +
+
+                    "Websites that handle passwords, personal information or sensitive data should use HTTPS.",
+
+                followups: [
+                    "What is TLS?",
+                    "What is a security certificate?",
+                    "How can I secure my website?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "xss",
+                    "cross site scripting",
+                    "cross-site scripting"
+                ],
+
+                response:
+                    "Cross-Site Scripting, or XSS, is a web security vulnerability where untrusted data can be interpreted as executable script in another user's browser.\n\n" +
+
+                    "Common types include:\n" +
+                    "• Reflected XSS\n" +
+                    "• Stored XSS\n" +
+                    "• DOM-based XSS\n\n" +
+
+                    "Possible impact can include session compromise, unauthorized actions or modification of page content.\n\n" +
+
+                    "Common defenses include output encoding, safe input handling and Content Security Policy.",
+
+                followups: [
+                    "What is SQL injection?",
+                    "What is CSRF?",
+                    "What is OWASP?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "sql injection",
+                    "sqli"
+                ],
+
+                response:
+                    "SQL injection occurs when untrusted input is incorrectly included in a database query.\n\n" +
+
+                    "This can allow an attacker to manipulate the intended database operation and potentially access or modify information.\n\n" +
+
+                    "The main defense is using parameterized queries or prepared statements instead of building SQL queries by directly joining user input with SQL code.\n\n" +
+
+                    "Additional protections include least-privilege database accounts, input validation and secure error handling.",
+
+                followups: [
+                    "What is XSS?",
+                    "What is parameterized query?",
+                    "What is OWASP?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "csrf",
+                    "cross site request forgery",
+                    "cross-site request forgery"
+                ],
+
+                response:
+                    "Cross-Site Request Forgery, or CSRF, is a web attack where a user's authenticated browser is tricked into sending an unwanted request to a website.\n\n" +
+
+                    "Common defenses include:\n" +
+                    "• CSRF tokens\n" +
+                    "• Appropriate SameSite cookie settings\n" +
+                    "• Validating request context\n" +
+                    "• Proper authentication and authorization checks\n\n" +
+
+                    "CSRF is mainly concerned with unwanted actions performed using a user's existing authenticated session.",
+
+                followups: [
+                    "What is XSS?",
+                    "What are cookies?",
+                    "What is session security?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "owasp",
+                    "owasp top 10"
+                ],
+
+                response:
+                    "OWASP is a nonprofit organization focused on improving software security.\n\n" +
+
+                    "The OWASP Top 10 is a widely used awareness resource covering major categories of web application security risks.\n\n" +
+
+                    "It helps developers, testers and security professionals understand common weaknesses such as broken access control, injection and security misconfiguration.\n\n" +
+
+                    "It is an awareness resource, not a complete list of every possible security vulnerability.",
+
+                followups: [
+                    "What is SQL injection?",
+                    "What is XSS?",
+                    "What is broken access control?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "security headers",
+                    "http security headers",
+                    "headers"
+                ],
+
+                response:
+                    "HTTP security headers allow a web server to provide security-related instructions to a browser.\n\n" +
+
+                    "Important examples include:\n" +
+                    "• Content-Security-Policy (CSP) - controls which resources a page can load.\n" +
+                    "• Strict-Transport-Security (HSTS) - tells browsers to use HTTPS.\n" +
+                    "• X-Content-Type-Options - helps prevent MIME-type sniffing.\n" +
+                    "• Referrer-Policy - controls referrer information.\n" +
+                    "• Permissions-Policy - controls access to certain browser features.\n\n" +
+
+                    "The correct configuration depends on the website and its requirements.",
+
+                followups: [
+                    "What is CSP?",
+                    "What is HSTS?",
+                    "How can I secure my website?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "cookie",
+                    "cookies"
+                ],
+
+                response:
+                    "Cookies are small pieces of information stored by a browser for a website.\n\n" +
+
+                    "They can be used for:\n" +
+                    "• Login sessions\n" +
+                    "• User preferences\n" +
+                    "• Tracking identifiers\n\n" +
+
+                    "Security-sensitive cookies should use appropriate attributes such as Secure, HttpOnly and SameSite.\n\n" +
+
+                    "Secure restricts transmission to HTTPS connections, HttpOnly helps prevent JavaScript from reading the cookie, and SameSite helps reduce certain cross-site risks.",
+
+                followups: [
+                    "What is HTTPS?",
+                    "What is CSRF?",
+                    "What is session security?"
+                ]
+            },
+
+
+            /* ================= NETWORK SECURITY ================= */
+
+            {
+                match: [
+                    "ip address",
+                    "ip"
+                ],
+
+                exact: [
+                    "ip"
+                ],
+
+                response:
+                    "An IP address identifies a network interface on an IP network.\n\n" +
+
+                    "The two main versions are:\n" +
+                    "• IPv4 - uses 32-bit addresses.\n" +
+                    "• IPv6 - uses 128-bit addresses.\n\n" +
+
+                    "An IP address can be public or private depending on how it is used.\n\n" +
+
+                    "An IP address can provide network-related information, but it normally does not directly reveal someone's exact home address.",
+
+                followups: [
+                    "What is a public IP?",
+                    "What is a private IP?",
+                    "What is NAT?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "public ip",
+                    "public ip address"
+                ],
+
+                response:
+                    "A public IP address is an address used for communication across the public Internet.\n\n" +
+
+                    "A home or office network may have one public IP address assigned by an Internet Service Provider while devices inside the network use private IP addresses.\n\n" +
+
+                    "Routers commonly use NAT to translate traffic between private internal addresses and a public address.",
+
+                followups: [
+                    "What is a private IP?",
+                    "What is NAT?",
+                    "What is an IP address?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "private ip",
+                    "private ip address"
+                ],
+
+                response:
+                    "Private IP addresses are used inside local networks and are not directly routable across the public Internet.\n\n" +
+
+                    "Common IPv4 private ranges are:\n" +
+                    "• 10.0.0.0/8\n" +
+                    "• 172.16.0.0/12\n" +
+                    "• 192.168.0.0/16\n\n" +
+
+                    "A router commonly uses NAT to allow devices with private addresses to communicate with Internet services.",
+
+                followups: [
+                    "What is NAT?",
+                    "What is a public IP?",
+                    "What is DHCP?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "nat",
+                    "network address translation"
+                ],
+
+                response:
+                    "NAT stands for Network Address Translation.\n\n" +
+
+                    "It allows a router or other network device to translate private internal IP addresses into a public address when communicating with external networks.\n\n" +
+
+                    "NAT helps conserve IPv4 addresses and separates internal addressing from external addressing.\n\n" +
+
+                    "NAT is not a complete security solution. Firewalls and other network security controls are still important.",
+
+                followups: [
+                    "What is a private IP?",
+                    "What is a firewall?",
+                    "What is DHCP?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "firewall"
+                ],
+
+                response:
+                    "A firewall controls network traffic according to configured security rules.\n\n" +
+
+                    "A firewall can:\n" +
+                    "• Allow trusted traffic\n" +
+                    "• Block unwanted connections\n" +
+                    "• Restrict traffic by IP, port or protocol\n" +
+                    "• Help segment networks\n\n" +
+
+                    "A firewall is only one layer of security. Secure applications, authentication, patching, endpoint protection and monitoring are also important.",
+
+                followups: [
+                    "What is a port?",
+                    "What is Nmap?",
+                    "What is network security?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "port",
+                    "network port",
+                    "ports"
+                ],
+
+                response:
+                    "A network port is a logical endpoint used by applications and services to communicate using network protocols.\n\n" +
+
+                    "Common examples include:\n" +
+                    "• HTTP - port 80\n" +
+                    "• HTTPS - port 443\n" +
+                    "• SSH - port 22\n" +
+                    "• DNS - port 53\n\n" +
+
+                    "An open port is not automatically a vulnerability. Security depends on which service is listening, its configuration and whether it should be accessible.",
+
+                followups: [
+                    "What is Nmap?",
+                    "What is port scanning?",
+                    "What is a firewall?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "tcp",
+                    "udp"
+                ],
+
+                response:
+                    "TCP and UDP are transport-layer protocols.\n\n" +
+
+                    "TCP provides connection-oriented communication and mechanisms for reliable and ordered delivery.\n\n" +
+
+                    "UDP is connectionless and has lower protocol overhead. It does not provide TCP's built-in reliability and ordering mechanisms.\n\n" +
+
+                    "Applications choose TCP or UDP depending on their communication requirements.",
+
+                followups: [
+                    "What is a port?",
+                    "What is the OSI model?",
+                    "What is network security?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "dns",
+                    "domain name system"
+                ],
+
+                response:
+                    "DNS stands for Domain Name System.\n\n" +
+
+                    "DNS translates domain names such as example.com into IP addresses used by network systems.\n\n" +
+
+                    "DNS is important for Internet communication because users normally remember domain names rather than numerical IP addresses.\n\n" +
+
+                    "Security teams also need to consider risks such as DNS spoofing, malicious domains and incorrect DNS configurations.",
+
+                followups: [
+                    "What is an IP address?",
+                    "What is DNS spoofing?",
+                    "What is reconnaissance?"
+                ]
+            },
+
+
+            /* ================= ETHICAL HACKING TOOLS ================= */
+
+            {
+                match: [
+                    "nmap"
+                ],
+
+                response:
+                    "Nmap is a network discovery and security auditing tool.\n\n" +
+
+                    "Security professionals can use Nmap in an authorized environment to discover hosts, identify open ports and determine which network services are exposed.\n\n" +
+
+                    "Common legitimate uses include:\n" +
+                    "• Network inventory\n" +
+                    "• Port discovery\n" +
+                    "• Service discovery\n" +
+                    "• Security auditing\n" +
+                    "• Firewall verification\n\n" +
+
+                    "Nmap should only be used against systems that you own or have explicit permission to test.",
+
+                followups: [
+                    "What is port scanning?",
+                    "What is reconnaissance?",
+                    "What is ethical hacking?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "port scanning",
+                    "port scan",
+                    "scanning ports"
+                ],
+
+                response:
+                    "Port scanning is the process of checking network ports to determine whether they appear open, closed or filtered.\n\n" +
+
+                    "Security professionals use port scanning during authorized assessments to understand which services are exposed.\n\n" +
+
+                    "The results can help identify unnecessary services and improve firewall rules.\n\n" +
+
+                    "Port scanning should only be performed against systems for which you have authorization.",
+
+                followups: [
+                    "What is Nmap?",
+                    "What is enumeration?",
+                    "What is a firewall?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "burp suite",
+                    "burp"
+                ],
+
+                response:
+                    "Burp Suite is a web application security testing platform.\n\n" +
+
+                    "Security testers use it to inspect and analyze HTTP requests and responses generated by web applications.\n\n" +
+
+                    "It can help testers understand:\n" +
+                    "• Request and response behavior\n" +
+                    "• Authentication flows\n" +
+                    "• Session handling\n" +
+                    "• Input validation\n" +
+                    "• Web application security weaknesses\n\n" +
+
+                    "Burp Suite should only be used against applications you are authorized to test.",
+
+                followups: [
+                    "What is web penetration testing?",
+                    "What is HTTP?",
+                    "What is XSS?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "kali linux",
+                    "kali"
+                ],
+
+                response:
+                    "Kali Linux is a Linux distribution designed for security testing, digital forensics and related security work.\n\n" +
+
+                    "It includes many tools used for:\n" +
+                    "• Network analysis\n" +
+                    "• Web security testing\n" +
+                    "• Vulnerability assessment\n" +
+                    "• Digital forensics\n" +
+                    "• Wireless security testing\n\n" +
+
+                    "Using Kali Linux does not automatically make an activity legal or ethical. Authorization and scope are always required.",
+
+                followups: [
+                    "What is ethical hacking?",
+                    "What is Nmap?",
+                    "What is Burp Suite?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "reconnaissance",
+                    "recon"
+                ],
+
+                response:
+                    "Reconnaissance is the information-gathering stage of a security assessment.\n\n" +
+
+                    "The goal is to understand the authorized target before deeper testing begins.\n\n" +
+
+                    "It may involve identifying:\n" +
+                    "• Domains and subdomains\n" +
+                    "• IP addresses\n" +
+                    "• Technologies\n" +
+                    "• Publicly exposed services\n" +
+                    "• Application structure\n\n" +
+
+                    "Reconnaissance can be passive or active. Passive reconnaissance collects information without directly interacting with the target, while active reconnaissance involves direct interaction and therefore requires authorization.",
+
+                followups: [
+                    "What is enumeration?",
+                    "What is Nmap?",
+                    "What is ethical hacking?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "enumeration"
+                ],
+
+                response:
+                    "Enumeration is the process of collecting detailed information about services, systems or applications discovered during a security assessment.\n\n" +
+
+                    "Examples include identifying service versions, available resources or information exposed by an authorized system.\n\n" +
+
+                    "Enumeration helps security testers understand the attack surface and identify areas requiring further security review.",
+
+                followups: [
+                    "What is reconnaissance?",
+                    "What is Nmap?",
+                    "What is vulnerability scanning?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "vulnerability scanning",
+                    "vulnerability scanner",
+                    "vulnerability scan"
+                ],
+
+                response:
+                    "Vulnerability scanning is the process of checking systems or applications for known security weaknesses.\n\n" +
+
+                    "A scanner may examine software versions, configurations, exposed services and other indicators associated with known vulnerabilities.\n\n" +
+
+                    "Scanning is useful for finding potential weaknesses, but results should be validated because automated tools can produce false positives or miss application-specific context.",
+
+                followups: [
+                    "What is penetration testing?",
+                    "What is CVE?",
+                    "What is a vulnerability?"
+                ]
+            },
+
+
+            /* ================= AUTHENTICATION ================= */
+
+            {
+                match: [
+                    "password",
+                    "strong password"
+                ],
+
+                response:
+                    "A strong password should be long, unique and difficult to guess.\n\n" +
+
+                    "Good practices include:\n" +
+                    "• Do not reuse passwords across important accounts.\n" +
+                    "• Use a password manager where appropriate.\n" +
+                    "• Avoid predictable personal information.\n" +
+                    "• Enable multi-factor authentication.\n\n" +
+
+                    "Passkeys and strong multi-factor authentication can provide additional protection against account takeover.",
+
+                followups: [
+                    "What is MFA?",
+                    "What is password hashing?",
+                    "What is phishing?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "two-factor",
+                    "2fa",
+                    "mfa",
+                    "multi-factor"
+                ],
+
+                response:
+                    "Multi-factor authentication requires more than one type of authentication factor.\n\n" +
+
+                    "Common factors include:\n" +
+                    "• Something you know - password or PIN\n" +
+                    "• Something you have - security key or authenticator device\n" +
+                    "• Something you are - biometric characteristic\n\n" +
+
+                    "MFA can significantly reduce account takeover risk when a password is compromised.",
+
+                followups: [
+                    "What is phishing?",
+                    "What is authentication?",
+                    "What is a passkey?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "encryption",
+                    "encrypt"
+                ],
+
+                response:
+                    "Encryption transforms readable data into protected ciphertext using cryptographic algorithms and keys.\n\n" +
+
+                    "It can protect:\n" +
+                    "• Data in transit\n" +
+                    "• Data stored on devices\n" +
+                    "• Database information\n" +
+                    "• Communications\n\n" +
+
+                    "Encryption is different from hashing. Encryption is designed to be reversible when the correct key is available, while cryptographic hashing produces a one-way digest.",
+
+                followups: [
+                    "What is hashing?",
+                    "What is HTTPS?",
+                    "What is AES?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "hashing",
+                    "hash",
+                    "sha256",
+                    "sha-256"
+                ],
+
+                response:
+                    "Hashing converts input data into a fixed-size value called a hash or digest.\n\n" +
+
+                    "A cryptographic hash function is designed so that it is computationally difficult to recover the original input from the hash.\n\n" +
+
+                    "SHA-256 is a commonly used cryptographic hash function.\n\n" +
+
+                    "Passwords should not normally be stored using a plain SHA-256 hash alone. Password storage should use a password-specific function such as Argon2, bcrypt or scrypt with appropriate salts and parameters.",
+
+                followups: [
+                    "What is encryption?",
+                    "What is SHA-256?",
+                    "How are passwords stored securely?"
+                ]
+            },
+
+
+            /* ================= MALWARE ================= */
+
+            {
+                match: [
+                    "phishing",
+                    "fake website",
+                    "scam"
+                ],
+
+                response:
+                    "Phishing is a social-engineering technique used to trick people into revealing information or performing an unsafe action.\n\n" +
+
+                    "Attackers may use fake login pages, emails, messages or websites that imitate trusted organizations.\n\n" +
+
+                    "Warning signs include:\n" +
+                    "• Unexpected login requests\n" +
+                    "• Suspicious domains\n" +
+                    "• Urgent or threatening messages\n" +
+                    "• Unexpected attachments\n" +
+                    "• Requests for passwords or financial information\n\n" +
+
+                    "Always verify the destination before entering credentials.",
+
+                followups: [
+                    "What is social engineering?",
+                    "How can I identify a phishing website?",
+                    "What is MFA?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "malware",
+                    "virus",
+                    "trojan",
+                    "worm"
+                ],
+
+                response:
+                    "Malware is malicious software designed to perform harmful or unauthorized actions.\n\n" +
+
+                    "Examples include:\n" +
+                    "• Viruses\n" +
+                    "• Worms\n" +
+                    "• Trojans\n" +
+                    "• Ransomware\n" +
+                    "• Spyware\n" +
+                    "• Rootkits\n\n" +
+
+                    "Protection includes keeping systems updated, using security controls, avoiding untrusted downloads and monitoring for suspicious activity.",
+
+                followups: [
+                    "What is ransomware?",
+                    "What is a Trojan?",
+                    "What is phishing?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "ransomware"
+                ],
+
+                response:
+                    "Ransomware is malware that can prevent access to files or systems, commonly by encrypting data, and then demands payment from the victim.\n\n" +
+
+                    "Important defenses include:\n" +
+                    "• Regular tested backups\n" +
+                    "• Security updates\n" +
+                    "• Endpoint protection\n" +
+                    "• Strong authentication\n" +
+                    "• Network segmentation\n" +
+                    "• Careful handling of email attachments and links\n\n" +
+
+                    "Organizations should also maintain an incident-response plan.",
+
+                followups: [
+                    "What is malware?",
+                    "How do backups help?",
+                    "What is incident response?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "ddos",
+                    "denial of service"
+                ],
+
+                response:
+                    "A Distributed Denial-of-Service attack, or DDoS attack, attempts to make a service unavailable by overwhelming it with traffic or requests from multiple sources.\n\n" +
+
+                    "Possible defenses include:\n" +
+                    "• Rate limiting\n" +
+                    "• Traffic filtering\n" +
+                    "• Load balancing\n" +
+                    "• CDN and DDoS protection services\n" +
+                    "• Capacity planning\n\n" +
+
+                    "DDoS attacks primarily target availability.",
+
+                followups: [
+                    "What is a firewall?",
+                    "What is rate limiting?",
+                    "What is network security?"
+                ]
+            },
+
+
+            /* ================= SECURITY OPERATIONS ================= */
+
+            {
+                match: [
+                    "incident response",
+                    "security incident"
+                ],
+
+                response:
+                    "Incident response is the structured process used to identify, contain, investigate and recover from a cybersecurity incident.\n\n" +
+
+                    "Typical activities include:\n" +
+                    "1. Preparation\n" +
+                    "2. Detection and analysis\n" +
+                    "3. Containment\n" +
+                    "4. Eradication\n" +
+                    "5. Recovery\n" +
+                    "6. Lessons learned\n\n" +
+
+                    "Good incident response reduces damage and helps an organization return to normal operations safely.",
+
+                followups: [
+                    "What is SIEM?",
+                    "What is malware?",
+                    "What is a security log?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "siem"
+                ],
+
+                response:
+                    "SIEM stands for Security Information and Event Management.\n\n" +
+
+                    "A SIEM collects and analyzes security-related logs and events from different systems.\n\n" +
+
+                    "Security teams can use SIEM platforms to:\n" +
+                    "• Centralize logs\n" +
+                    "• Detect suspicious patterns\n" +
+                    "• Investigate incidents\n" +
+                    "• Generate alerts\n" +
+                    "• Support security reporting\n\n" +
+
+                    "The quality of detection depends on the data, rules, configuration and investigation process.",
+
+                followups: [
+                    "What is incident response?",
+                    "What is a security log?",
+                    "What is threat detection?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "backup",
+                    "backups"
+                ],
+
+                response:
+                    "A backup is a separate copy of important data that can be used for recovery after accidental deletion, hardware failure, corruption or a cyberattack.\n\n" +
+
+                    "A common approach is the 3-2-1 strategy:\n" +
+                    "• 3 copies of important data\n" +
+                    "• 2 different storage types\n" +
+                    "• 1 copy stored separately or off-site\n\n" +
+
+                    "Backups should also be tested regularly to verify that restoration actually works.",
+
+                followups: [
+                    "What is ransomware?",
+                    "What is incident response?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "patch",
+                    "patching",
+                    "update software"
+                ],
+
+                response:
+                    "Patch management is the process of identifying, testing and applying software updates that fix bugs and security vulnerabilities.\n\n" +
+
+                    "A good patching process includes:\n" +
+                    "• Tracking installed software\n" +
+                    "• Monitoring security advisories\n" +
+                    "• Prioritizing important vulnerabilities\n" +
+                    "• Testing updates where appropriate\n" +
+                    "• Applying patches\n" +
+                    "• Verifying successful deployment",
+
+                followups: [
+                    "What is a vulnerability?",
+                    "What is CVE?",
+                    "What is vulnerability scanning?"
+                ]
+            },
+
+
+            /* ================= SOCIAL ENGINEERING ================= */
+
+            {
+                match: [
+                    "social engineering"
+                ],
+
+                response:
+                    "Social engineering involves manipulating people into revealing information or performing actions that weaken security.\n\n" +
+
+                    "Common examples include:\n" +
+                    "• Phishing\n" +
+                    "• Pretexting\n" +
+                    "• Baiting\n" +
+                    "• Impersonation\n" +
+                    "• Tailgating\n\n" +
+
+                    "The best defense combines security awareness with technical controls such as MFA, access control and email filtering.",
+
+                followups: [
+                    "What is phishing?",
+                    "What is MFA?"
+                ]
+            },
+
+
+            /* ================= VPN ================= */
+
+            {
+                match: [
+                    "vpn"
+                ],
+
+                response:
+                    "A VPN creates an encrypted connection between your device and a VPN service or network endpoint.\n\n" +
+
+                    "A VPN can help protect traffic on untrusted networks and can provide secure remote access to an organization.\n\n" +
+
+                    "However, a VPN does not make a person completely anonymous and does not automatically protect against malware, phishing or unsafe websites.",
+
+                followups: [
+                    "What is encryption?",
+                    "What is a firewall?",
+                    "What is public Wi-Fi safety?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "public wifi",
+                    "public wi-fi"
+                ],
+
+                response:
+                    "Public Wi-Fi networks can present additional security risks because they may be shared with many unknown users.\n\n" +
+
+                    "Good practices include:\n" +
+                    "• Use HTTPS websites.\n" +
+                    "• Avoid entering sensitive information on suspicious networks.\n" +
+                    "• Disable automatic connection to unknown networks.\n" +
+                    "• Use a trusted VPN when appropriate.\n" +
+                    "• Keep your device and security software updated.",
+
+                followups: [
+                    "What is a VPN?",
+                    "What is HTTPS?"
+                ]
+            },
+
+
+            /* ================= WEBSITE SECURITY ================= */
+
+            {
+                match: [
+                    "secure my website",
+                    "secure website",
+                    "website security"
+                ],
+
+                response:
+                    "Important website security practices include:\n\n" +
+
+                    "1. Use HTTPS and configure TLS correctly.\n" +
+                    "2. Keep frameworks, libraries and server software updated.\n" +
+                    "3. Use strong authentication and MFA where appropriate.\n" +
+                    "4. Validate and safely handle user input.\n" +
+                    "5. Use parameterized database queries.\n" +
+                    "6. Configure appropriate security headers.\n" +
+                    "7. Protect session cookies.\n" +
+                    "8. Apply least-privilege access controls.\n" +
+                    "9. Monitor logs and suspicious activity.\n" +
+                    "10. Perform regular security testing.",
+
+                followups: [
+                    "What is XSS?",
+                    "What is SQL injection?",
+                    "What are security headers?"
+                ]
+            },
+
+
+            /* ================= SCANNER ================= */
+
+            {
+                match: [
+                    "security score",
+                    "score"
+                ],
+
+                dynamic: function () {
+
+                    const lastScan =
+                        getLastScan();
+
+                    if (!lastScan) {
+
+                        return (
+                            "You have not completed a website scan yet.\n\n" +
+
+                            "Open the Security Scanner, enter a website URL and run a scan. " +
+
+                            "The scanner can then save the result for SecureBot to explain."
+                        );
+                    }
+
+
+                    return (
+                        "Your latest saved scan has a score of " +
+                        lastScan.score +
+                        "/100 and " +
+                        lastScan.issues +
+                        " issue(s).\n\n" +
+
+                        "This score is a simplified project metric based on the checks performed by this application. " +
+
+                        "It should not be treated as a complete professional vulnerability assessment."
+                    );
+                },
+
+                followups: [
+                    "How can I secure my website?",
+                    "What is vulnerability scanning?"
+                ]
+            },
+
+
+            /* ================= GREETINGS ================= */
+
+            {
+                match: [
+                    "hi",
+                    "hello",
+                    "hey"
+                ],
+
+                exact: [
+                    "hi",
+                    "hello",
+                    "hey"
+                ],
+
+                response:
+                    "Hello! I'm SecureBot.\n\n" +
+
+                    "I can help you understand cybersecurity, ethical hacking, network security, web security, security tools and your scanner results.\n\n" +
+
+                    "You can ask questions such as:\n" +
+                    "• What is ethical hacking?\n" +
+                    "• What is Nmap?\n" +
+                    "• What is SQL injection?\n" +
+                    "• What is XSS?\n" +
+                    "• What is penetration testing?",
+
+                followups: [
+                    "What is ethical hacking?",
+                    "What is Nmap?",
+                    "What is penetration testing?"
+                ]
+            },
+
+
+            {
+                match: [
+                    "thank",
+                    "thanks"
+                ],
+
+                response:
+                    "You're welcome! I'm ready to help with your cybersecurity and ethical hacking questions.",
+
+                followups: [
+                    "What is ethical hacking?",
+                    "What is Nmap?",
+                    "What is penetration testing?"
+                ]
+            }
+
+        ];
+
+
+        /* =====================================================
+           GENERATE RESPONSE
+        ===================================================== */
+
+        function generateResponse(question) {
+
+            const text =
+                question
+                    .toLowerCase()
+                    .trim();
+
+
+            for (
+                let i = 0;
+                i < knowledgeBase.length;
+                i++
+            ) {
+
+                const entry =
+                    knowledgeBase[i];
+
+
+                const exactHit =
+                    entry.exact &&
+                    entry.exact.includes(text);
+
+
+                const partialHit =
+                    entry.match &&
+                    entry.match.some(
+                        function (keyword) {
+
+                            return text.includes(
+                                keyword
+                            );
+
+                        }
+                    );
+
+
+                if (
+                    exactHit ||
+                    partialHit
+                ) {
+
+                    const response =
+                        entry.dynamic
+                            ? entry.dynamic()
+                            : entry.response;
+
+
+                    return {
+
+                        text: response,
+
+                        followups:
+                            entry.followups || []
+
+                    };
+                }
+            }
+
+
+            return {
+
+                text:
+                    "I can help with cybersecurity and ethical hacking topics such as:\n\n" +
+
+                    "• Ethical hacking\n" +
+                    "• Penetration testing\n" +
+                    "• Reconnaissance\n" +
+                    "• Enumeration\n" +
+                    "• Nmap\n" +
+                    "• Burp Suite\n" +
+                    "• Kali Linux\n" +
+                    "• Network security\n" +
+                    "• IP addresses and ports\n" +
+                    "• TCP and UDP\n" +
+                    "• DNS and NAT\n" +
+                    "• HTTPS and TLS\n" +
+                    "• Phishing and social engineering\n" +
+                    "• SQL injection\n" +
+                    "• XSS and CSRF\n" +
+                    "• Authentication and MFA\n" +
+                    "• Encryption and hashing\n" +
+                    "• Malware and ransomware\n" +
+                    "• Vulnerability scanning\n" +
+                    "• CVE and CVSS\n" +
+                    "• Firewalls and VPNs\n" +
+                    "• Incident response and SIEM\n" +
+                    "• Website security\n\n" +
+
+                    "Please ask a more specific cybersecurity question and I'll explain it step by step.",
+
+                followups: [
+                    "What is ethical hacking?",
+                    "What is Nmap?",
+                    "What is penetration testing?",
+                    "What is SQL injection?",
+                    "What is XSS?"
+                ]
+
+            };
+        }
+
+
+        /* =====================================================
+           SEND MESSAGE
+        ===================================================== */
+
+        function sendMessage() {
+
+            const question =
+                chatInput.value.trim();
+
+
+            if (!question) {
+                return;
+            }
+
+
+            addMessage(
+                question,
+                "user"
+            );
+
+
+            chatInput.value = "";
+
+            updateCharCount();
+
+
+            chatInput.disabled = true;
+
+            sendChat.disabled = true;
+
+            micButton.disabled = true;
+
+
+            showTyping();
+
+
+            setTimeout(
+                function () {
+
+                    hideTyping();
+
+
+                    const result =
+                        generateResponse(
+                            question
+                        );
+
+
+                    addMessage(
+                        result.text,
+                        "bot"
+                    );
+
+
+                    addFollowups(
+                        result.followups
+                    );
+
+
+                    chatInput.disabled = false;
+
+                    sendChat.disabled = false;
+
+                    micButton.disabled = false;
+
+                    chatInput.focus();
+
+                },
+                650
+            );
+        }
+
+
+        sendChat.addEventListener(
+            "click",
+            sendMessage
+        );
+
+
+        chatInput.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (event.key === "Enter") {
+
+                    event.preventDefault();
+
+                    sendMessage();
+                }
+            }
+        );
+
+
+        /* =====================================================
+           CHARACTER COUNTER
+        ===================================================== */
+
+        function updateCharCount() {
+
+            charCount.textContent =
+                chatInput.value.length +
+                " / 300";
+        }
+
+
+        chatInput.addEventListener(
+            "input",
+            updateCharCount
+        );
+
+
+        /* =====================================================
+           QUICK QUESTIONS
+        ===================================================== */
+
+        document
+            .querySelectorAll(".quick-button")
+            .forEach(
+                function (button) {
+
+                    button.addEventListener(
+                        "click",
+                        function () {
+
+                            chatInput.value =
+                                button.dataset.question;
+
+                            sendMessage();
+
+                        }
+                    );
+
+                }
+            );
+
+
+        /* =====================================================
+           CLEAR CHAT
+        ===================================================== */
+
+        clearChat.addEventListener(
+            "click",
+            function () {
+
+                if (
+                    !confirm(
+                        "Clear the entire conversation? This cannot be undone."
+                    )
+                ) {
+                    return;
+                }
+
+
+                conversation = [];
+
+
+                localStorage.removeItem(
+                    HISTORY_KEY
+                );
+
+
+                chatMessages.innerHTML =
+                    "";
+
+
+                addMessage(
+                    "Conversation cleared. Ask me about cybersecurity, ethical hacking, network security, web security or your latest security scan.",
+                    "bot"
+                );
+
+            }
+        );
+
+
+        /* =====================================================
+           EXPORT CHAT
+        ===================================================== */
+
+        exportChat.addEventListener(
+            "click",
+            function () {
+
+                if (
+                    conversation.length === 0
+                ) {
+
+                    alert(
+                        "There is no conversation to export yet."
+                    );
+
+                    return;
+                }
+
+
+                const lines =
+                    conversation.map(
+                        function (item) {
+
+                            const who =
+                                item.sender === "bot"
+                                    ? "SecureBot"
+                                    : "You";
+
+
+                            const time =
+                                formatTime(
+                                    new Date(
+                                        item.time
+                                    )
+                                );
+
+
+                            return (
+                                "[" +
+                                time +
+                                "] " +
+                                who +
+                                ": " +
+                                item.text
+                            );
+
+                        }
+                    );
+
+
+                const blob =
+                    new Blob(
+                        [
+                            lines.join(
+                                "\n\n"
+                            )
+                        ],
+                        {
+                            type: "text/plain"
+                        }
+                    );
+
+
+                const url =
+                    URL.createObjectURL(
+                        blob
+                    );
+
+
+                const link =
+                    document.createElement(
+                        "a"
+                    );
+
+
+                link.href =
+                    url;
+
+
+                link.download =
+                    "securebot-conversation.txt";
+
+
+                link.click();
+
+
+                URL.revokeObjectURL(
+                    url
+                );
+
+            }
+        );
+
+
+        /* =====================================================
+           VOICE INPUT
+        ===================================================== */
+
+        (function setupVoiceInput() {
+
+            const SpeechRecognition =
+                window.SpeechRecognition ||
+                window.webkitSpeechRecognition;
+
+
+            if (!SpeechRecognition) {
+
+                micButton.disabled =
+                    true;
+
+                micButton.title =
+                    "Voice input is not supported in this browser";
+
+                return;
+            }
+
+
+            const recognition =
+                new SpeechRecognition();
+
+
+            recognition.lang =
+                "en-US";
+
+            recognition.continuous =
+                false;
+
+            recognition.interimResults =
+                false;
+
+
+            let listening =
+                false;
+
+
+            micButton.addEventListener(
+                "click",
+                function () {
+
+                    if (listening) {
+
+                        recognition.stop();
+
+                        return;
+                    }
+
+
+                    try {
+
+                        recognition.start();
+
+                        listening = true;
+
+                        micButton.classList.add(
+                            "listening"
+                        );
+
+                    } catch (error) {
+
+                        listening = false;
+                    }
+
+                }
+            );
+
+
+            recognition.addEventListener(
+                "result",
+                function (event) {
+
+                    const transcript =
+                        event.results[0][0]
+                            .transcript;
+
+
+                    chatInput.value =
+                        transcript;
+
+
+                    updateCharCount();
+
+                }
+            );
+
+
+            recognition.addEventListener(
+                "end",
+                function () {
+
+                    listening = false;
+
+                    micButton.classList.remove(
+                        "listening"
+                    );
+
+                }
+            );
+
+
+            recognition.addEventListener(
+                "error",
+                function () {
+
+                    listening = false;
+
+                    micButton.classList.remove(
+                        "listening"
+                    );
+
+                }
+            );
+
+        })();
+
+
+        /* =====================================================
+           LOAD SAVED HISTORY / INITIAL MESSAGE
+        ===================================================== */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                const saved =
+                    localStorage.getItem(
+                        HISTORY_KEY
+                    );
+
+
+                let restored =
+                    null;
+
+
+                if (saved) {
+
+                    try {
+
+                        restored =
+                            JSON.parse(saved);
+
+                    } catch (error) {
+
+                        restored =
+                            null;
+                    }
+                }
+
+
+                if (
+                    restored &&
+                    restored.length > 0
+                ) {
+
+                    restored.forEach(
+                        function (item) {
+
+                            addMessage(
+                                item.text,
+                                item.sender,
+                                false
+                            );
+
+                        }
+                    );
+
+
+                    conversation =
+                        restored;
+
+                } else {
+
+                    addMessage(
+                        "Hello! I'm SecureBot. Ask me about cybersecurity, ethical hacking, network security, web security, security tools or your latest security scan.",
+                        "bot"
+                    );
+
+                }
+
+
+                updateCharCount();
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>

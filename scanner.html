@@ -1,0 +1,5436 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Cybersecurity Threat Detection &amp; Analysis System - Security Scanner
+    </title>
+
+    <style>
+        /* =====================================================
+           RESET
+        ===================================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        /* =====================================================
+           BODY
+        ===================================================== */
+
+        body {
+
+            min-height: 100vh;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background-color:
+                #090c11;
+
+            background-image:
+                radial-gradient(circle at 50% 0%,
+                    rgba(45, 215, 196, 0.16),
+                    transparent 55%),
+
+                radial-gradient(circle at 100% 100%,
+                    rgba(45, 215, 196, 0.10),
+                    transparent 50%),
+
+                repeating-linear-gradient(0deg,
+                    rgba(45, 215, 196, 0.06) 0px,
+                    rgba(45, 215, 196, 0.06) 1px,
+                    transparent 1px,
+                    transparent 100px),
+
+                repeating-linear-gradient(90deg,
+                    rgba(45, 215, 196, 0.06) 0px,
+                    rgba(45, 215, 196, 0.06) 1px,
+                    transparent 1px,
+                    transparent 100px);
+
+            background-attachment:
+                fixed;
+
+            color:
+                #ffffff;
+        }
+
+
+        /* =====================================================
+           HEADER
+        ===================================================== */
+
+        header {
+
+            height: 72px;
+
+            padding:
+                0 34px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            background:
+                rgba(6, 16, 11, 0.72);
+
+            backdrop-filter:
+                blur(10px);
+
+            -webkit-backdrop-filter:
+                blur(10px);
+
+            border-bottom:
+                1px solid rgba(45,
+                    215,
+                    196,
+                    0.14);
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 100;
+        }
+
+
+        header h1 {
+
+            font-size: 21px;
+
+            color:
+                #f8fafc;
+        }
+
+
+        nav {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 24px;
+        }
+
+
+        nav a {
+
+            color:
+                #94a3b8;
+
+            text-decoration: none;
+
+            font-size: 14px;
+        }
+
+
+        nav a:hover {
+
+            color:
+                #2dd7c4;
+        }
+
+
+        .system-status {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            color:
+                #64748b;
+
+            font-size: 11px;
+
+            line-height: 1.15;
+
+            letter-spacing:
+                0.7px;
+
+            white-space:
+                nowrap;
+        }
+
+
+        .status-dot {
+
+            width:
+                8px;
+
+            height:
+                8px;
+
+            border-radius:
+                50%;
+
+            background:
+                #2dd7c4;
+
+            box-shadow:
+                0 0 10px rgba(45,
+                    215,
+                    196,
+                    0.65);
+        }
+
+
+        /* =====================================================
+           MAIN
+        ===================================================== */
+
+        main {
+
+            width:
+                100%;
+
+            max-width:
+                1050px;
+
+            margin:
+                0 auto;
+
+            padding:
+                45px 25px 70px;
+        }
+
+
+        /* =====================================================
+           PAGE HEADER
+        ===================================================== */
+
+        .page-header {
+
+            margin-bottom:
+                28px;
+        }
+
+
+        .page-header h2 {
+
+            font-size:
+                32px;
+
+            margin-bottom:
+                9px;
+        }
+
+
+        .page-header p {
+
+            color:
+                #94a3b8;
+
+            font-size:
+                14px;
+
+            line-height:
+                1.6;
+        }
+
+
+        /* =====================================================
+           SCANNER CARD
+        ===================================================== */
+
+        .scanner-card {
+
+            background:
+                rgba(8, 22, 15, 0.72);
+
+            backdrop-filter:
+                blur(8px);
+
+            -webkit-backdrop-filter:
+                blur(8px);
+
+            border:
+                1px solid rgba(45,
+                    215,
+                    196,
+                    0.14);
+
+            border-radius:
+                18px;
+
+            padding:
+                30px;
+
+            margin-bottom:
+                25px;
+        }
+
+
+        .scanner-card h3 {
+
+            font-size:
+                21px;
+
+            margin-bottom:
+                9px;
+        }
+
+
+        .scanner-card>p {
+
+            color:
+                #94a3b8;
+
+            font-size:
+                13px;
+
+            line-height:
+                1.6;
+
+            margin-bottom:
+                24px;
+        }
+
+
+        /* =====================================================
+           INPUT
+        ===================================================== */
+
+        .input-row {
+
+            display:
+                flex;
+
+            gap:
+                12px;
+        }
+
+
+        .input-row input {
+
+            flex:
+                1;
+
+            height:
+                50px;
+
+            padding:
+                0 15px;
+
+            background:
+                rgba(9, 12, 17, 0.65);
+
+            border:
+                1px solid rgba(45,
+                    215,
+                    196,
+                    0.25);
+
+            border-radius:
+                10px;
+
+            color:
+                #ffffff;
+
+            outline:
+                none;
+
+            font-size:
+                14px;
+        }
+
+
+        .input-row input:focus {
+
+            border-color:
+                #2dd7c4;
+
+            box-shadow:
+                0 0 0 3px rgba(45,
+                    215,
+                    196,
+                    0.14);
+        }
+
+
+        .input-row input::placeholder {
+
+            color:
+                #64748b;
+        }
+
+
+        #scanButton {
+
+            height:
+                50px;
+
+            padding:
+                0 22px;
+
+            border:
+                none;
+
+            border-radius:
+                10px;
+
+            background:
+                linear-gradient(135deg,
+                    #16a394,
+                    #0d7d71);
+
+            color:
+                #ffffff;
+
+            font-weight:
+                700;
+
+            cursor:
+                pointer;
+
+            transition:
+                transform 0.2s ease,
+                opacity 0.2s ease;
+        }
+
+
+        #scanButton:hover {
+
+            transform:
+                translateY(-1px);
+        }
+
+
+        #scanButton:disabled {
+
+            opacity:
+                0.55;
+
+            cursor:
+                not-allowed;
+        }
+
+
+        /* =====================================================
+           LOADING / ERROR
+        ===================================================== */
+
+        #loading {
+
+            display:
+                none;
+
+            margin-top:
+                20px;
+
+            padding:
+                13px 15px;
+
+            border-radius:
+                9px;
+
+            background:
+                rgba(45,
+                    215,
+                    196,
+                    0.10);
+
+            color:
+                #2dd7c4;
+
+            font-size:
+                13px;
+
+            text-align:
+                center;
+        }
+
+
+        #errorMessage {
+
+            display:
+                none;
+
+            margin-top:
+                20px;
+
+            padding:
+                13px 15px;
+
+            border-radius:
+                9px;
+
+            background:
+                rgba(239,
+                    68,
+                    68,
+                    0.08);
+
+            border:
+                1px solid rgba(239,
+                    68,
+                    68,
+                    0.18);
+
+            color:
+                #f87171;
+
+            font-size:
+                13px;
+        }
+
+
+        /* =====================================================
+           RESULTS
+        ===================================================== */
+
+        #results {
+
+            display:
+                none;
+        }
+
+
+        .result-header {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                space-between;
+
+            margin-bottom:
+                20px;
+        }
+
+
+        .result-header h3 {
+
+            font-size:
+                21px;
+        }
+
+
+        .website-address {
+
+            color:
+                #2dd7c4;
+
+            font-size:
+                13px;
+
+            word-break:
+                break-all;
+        }
+
+
+        /* =====================================================
+           SCORE
+        ===================================================== */
+
+        .score-card {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                230px 1fr;
+
+            gap:
+                28px;
+
+            padding:
+                25px;
+
+            background:
+                rgba(8,
+                    22,
+                    15,
+                    0.72);
+
+            border:
+                1px solid rgba(45,
+                    215,
+                    196,
+                    0.14);
+
+            border-radius:
+                16px;
+
+            margin-bottom:
+                20px;
+        }
+
+
+        .score-display {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+        }
+
+
+        .score-circle {
+
+            width:
+                175px;
+
+            height:
+                175px;
+
+            border-radius:
+                50%;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            background:
+                conic-gradient(#2dd7c4 var(--score-angle),
+                    #142522 var(--score-angle));
+
+            position:
+                relative;
+        }
+
+
+        .score-circle::before {
+
+            content:
+                "";
+
+            position:
+                absolute;
+
+            width:
+                135px;
+
+            height:
+                135px;
+
+            border-radius:
+                50%;
+
+            background:
+                #0d1512;
+        }
+
+
+        .score-number {
+
+            position:
+                relative;
+
+            z-index:
+                2;
+
+            text-align:
+                center;
+        }
+
+
+        #scoreNumber {
+
+            display:
+                block;
+
+            font-size:
+                38px;
+
+            font-weight:
+                700;
+        }
+
+
+        .score-out-of {
+
+            color:
+                #94a3b8;
+
+            font-size:
+                13px;
+        }
+
+
+        .score-summary {
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            justify-content:
+                center;
+        }
+
+
+        .score-summary h3 {
+
+            font-size:
+                22px;
+
+            margin-bottom:
+                10px;
+        }
+
+
+        .score-summary p {
+
+            color:
+                #94a3b8;
+
+            line-height:
+                1.7;
+
+            font-size:
+                14px;
+        }
+
+
+        /* =====================================================
+           CHECKS
+        ===================================================== */
+
+        .checks-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap:
+                15px;
+
+            margin-bottom:
+                20px;
+        }
+
+
+        .check-card {
+
+            padding:
+                20px;
+
+            background:
+                rgba(8,
+                    22,
+                    15,
+                    0.72);
+
+            border:
+                1px solid rgba(45,
+                    215,
+                    196,
+                    0.14);
+
+            border-radius:
+                14px;
+        }
+
+
+        .check-top {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                space-between;
+
+            gap:
+                15px;
+
+            margin-bottom:
+                10px;
+        }
+
+
+        .check-top strong {
+
+            font-size:
+                15px;
+        }
+
+
+        .check-status {
+
+            padding:
+                5px 9px;
+
+            border-radius:
+                20px;
+
+            font-size:
+                11px;
+
+            font-weight:
+                700;
+        }
+
+
+        .status-pass {
+
+            color:
+                #4ade80;
+
+            background:
+                rgba(34,
+                    197,
+                    94,
+                    0.10);
+        }
+
+
+        .status-danger {
+
+            color:
+                #f87171;
+
+            background:
+                rgba(239,
+                    68,
+                    68,
+                    0.10);
+        }
+
+
+        .check-card p {
+
+            color:
+                #94a3b8;
+
+            font-size:
+                13px;
+
+            line-height:
+                1.7;
+        }
+
+
+        /* =====================================================
+           RECOMMENDATIONS
+        ===================================================== */
+
+        .recommendations {
+
+            padding:
+                24px;
+
+            background:
+                rgba(8,
+                    22,
+                    15,
+                    0.72);
+
+            border:
+                1px solid rgba(45,
+                    215,
+                    196,
+                    0.14);
+
+            border-radius:
+                14px;
+        }
+
+
+        .recommendations h3 {
+
+            font-size:
+                20px;
+
+            margin-bottom:
+                16px;
+        }
+
+
+        .recommendations ul {
+
+            list-style:
+                none;
+        }
+
+
+        .recommendations li {
+
+            position:
+                relative;
+
+            padding:
+                11px 0 11px 27px;
+
+            color:
+                #cbd5e1;
+
+            font-size:
+                13px;
+
+            line-height:
+                1.7;
+
+            border-bottom:
+                1px solid rgba(45,
+                    215,
+                    196,
+                    0.08);
+        }
+
+
+        .recommendations li::before {
+
+            content:
+                "✓";
+
+            position:
+                absolute;
+
+            left:
+                0;
+
+            color:
+                #2dd7c4;
+
+            font-weight:
+                700;
+        }
+
+
+        /* =====================================================
+           BACK BUTTON
+        ===================================================== */
+
+        .back-button {
+
+            display:
+                inline-block;
+
+            margin-top:
+                25px;
+
+            padding:
+                11px 16px;
+
+            border-radius:
+                9px;
+
+            background:
+                rgba(255,
+                    255,
+                    255,
+                    0.04);
+
+            border:
+                1px solid rgba(45,
+                    215,
+                    196,
+                    0.18);
+
+            color:
+                #cbd5e1;
+
+            text-decoration:
+                none;
+
+            font-size:
+                13px;
+        }
+
+
+        /* =====================================================
+           ADDITIONAL TOOLS
+        ===================================================== */
+
+        .additional-tools {
+
+            margin-bottom:
+                25px;
+        }
+
+
+        .feature-nav {
+
+            display:
+                flex;
+
+            flex-wrap:
+                wrap;
+
+            gap:
+                8px;
+
+            margin-bottom:
+                18px;
+
+            padding:
+                12px;
+
+            background:
+                rgba(8,
+                    22,
+                    15,
+                    0.55);
+
+            border:
+                1px solid rgba(45,
+                    215,
+                    196,
+                    0.10);
+
+            border-radius:
+                12px;
+        }
+
+
+        .feature-nav a {
+
+            color:
+                #94a3b8;
+
+            text-decoration:
+                none;
+
+            font-size:
+                12px;
+
+            padding:
+                8px 10px;
+
+            border-radius:
+                7px;
+
+            background:
+                rgba(255,
+                    255,
+                    255,
+                    0.03);
+
+            border:
+                1px solid rgba(45,
+                    215,
+                    196,
+                    0.10);
+        }
+
+
+        .feature-nav a:hover {
+
+            color:
+                #2dd7c4;
+        }
+
+
+        .tools-heading {
+
+            margin-bottom:
+                16px;
+        }
+
+
+        .tools-heading h3 {
+
+            font-size:
+                21px;
+
+            margin-bottom:
+                7px;
+        }
+
+
+        .tools-heading p {
+
+            color:
+                #94a3b8;
+
+            font-size:
+                13px;
+
+            line-height:
+                1.6;
+        }
+
+
+        .tools-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap:
+                15px;
+        }
+
+
+        .tool-card {
+
+            padding:
+                20px;
+
+            background:
+                rgba(8,
+                    22,
+                    15,
+                    0.72);
+
+            border:
+                1px solid rgba(45,
+                    215,
+                    196,
+                    0.14);
+
+            border-radius:
+                14px;
+
+            transition:
+                transform 0.2s ease,
+                border-color 0.2s ease;
+        }
+
+
+        .tool-card:hover {
+
+            transform:
+                translateY(-2px);
+
+            border-color:
+                rgba(45,
+                    215,
+                    196,
+                    0.35);
+        }
+
+
+        .tool-icon {
+
+            width:
+                42px;
+
+            height:
+                42px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            border-radius:
+                10px;
+
+            background:
+                rgba(45,
+                    215,
+                    196,
+                    0.10);
+
+            margin-bottom:
+                14px;
+
+            font-size:
+                21px;
+        }
+
+
+        .tool-card h4 {
+
+            font-size:
+                16px;
+
+            margin-bottom:
+                8px;
+        }
+
+
+        .tool-card p {
+
+            color:
+                #94a3b8;
+
+            font-size:
+                12px;
+
+            line-height:
+                1.6;
+
+            min-height:
+                58px;
+
+            margin-bottom:
+                15px;
+        }
+
+
+        .tool-button {
+
+            border:
+                1px solid rgba(45,
+                    215,
+                    196,
+                    0.20);
+
+            border-radius:
+                8px;
+
+            padding:
+                9px 12px;
+
+            background:
+                rgba(45,
+                    215,
+                    196,
+                    0.07);
+
+            color:
+                #2dd7c4;
+
+            font-size:
+                12px;
+
+            font-weight:
+                700;
+
+            cursor:
+                pointer;
+        }
+
+
+        .tool-button:hover {
+
+            background:
+                rgba(45,
+                    215,
+                    196,
+                    0.14);
+        }
+
+
+        /* =====================================================
+           TOOL PANEL
+        ===================================================== */
+
+        .tool-panel {
+
+            margin-top:
+                18px;
+
+            padding:
+                22px;
+
+            background:
+                rgba(8,
+                    22,
+                    15,
+                    0.72);
+
+            border:
+                1px solid rgba(45,
+                    215,
+                    196,
+                    0.14);
+
+            border-radius:
+                14px;
+        }
+
+
+        .tool-panel h4 {
+
+            font-size:
+                20px;
+
+            margin-bottom:
+                8px;
+        }
+
+
+        .tool-panel>p {
+
+            color:
+                #94a3b8;
+
+            font-size:
+                13px;
+
+            line-height:
+                1.7;
+
+            margin-bottom:
+                18px;
+        }
+
+
+        .tool-form {
+
+            display:
+                flex;
+
+            gap:
+                10px;
+
+            flex-wrap:
+                wrap;
+        }
+
+
+        .tool-form input {
+
+            flex:
+                1;
+
+            min-width:
+                220px;
+
+            height:
+                44px;
+
+            padding:
+                0 13px;
+
+            background:
+                rgba(9,
+                    12,
+                    17,
+                    0.65);
+
+            border:
+                1px solid rgba(45,
+                    215,
+                    196,
+                    0.20);
+
+            border-radius:
+                9px;
+
+            color:
+                #ffffff;
+
+            outline:
+                none;
+        }
+
+
+        .tool-form input:focus {
+
+            border-color:
+                #2dd7c4;
+        }
+
+
+        .tool-form button {
+
+            height:
+                44px;
+
+            padding:
+                0 16px;
+
+            border:
+                none;
+
+            border-radius:
+                9px;
+
+            background:
+                linear-gradient(135deg,
+                    #16a394,
+                    #0d7d71);
+
+            color:
+                #ffffff;
+
+            font-weight:
+                700;
+
+            cursor:
+                pointer;
+        }
+
+
+        /* =====================================================
+           DETAILED TOOL RESULTS
+        ===================================================== */
+
+        .tool-result {
+
+            margin-top:
+                18px;
+
+            padding:
+                20px;
+
+            border-radius:
+                10px;
+
+            background:
+                rgba(45,
+                    215,
+                    196,
+                    0.06);
+
+            border:
+                1px solid rgba(45,
+                    215,
+                    196,
+                    0.12);
+        }
+
+
+        .tool-result>strong {
+
+            display:
+                block;
+
+            font-size:
+                18px;
+
+            margin-bottom:
+                12px;
+        }
+
+
+        .tool-result p {
+
+            color:
+                #cbd5e1;
+
+            font-size:
+                14px;
+
+            line-height:
+                1.8;
+
+            margin:
+                12px 0;
+        }
+
+
+        .tool-result ul {
+
+            padding-left:
+                22px;
+
+            margin-top:
+                12px;
+        }
+
+
+        .tool-result li {
+
+            color:
+                #cbd5e1;
+
+            font-size:
+                14px;
+
+            line-height:
+                1.8;
+
+            margin-bottom:
+                12px;
+        }
+
+
+        .tool-result li strong {
+
+            color:
+                #ffffff;
+        }
+
+
+        .tool-pass {
+
+            color:
+                #4ade80 !important;
+        }
+
+
+        .tool-warning {
+
+            color:
+                #fbbf24 !important;
+        }
+
+
+        .tool-danger {
+
+            color:
+                #f87171 !important;
+        }
+
+
+        .history-item {
+
+            padding:
+                16px 0;
+
+            border-bottom:
+                1px solid rgba(45,
+                    215,
+                    196,
+                    0.08);
+        }
+
+
+        .history-item:last-child {
+
+            border-bottom:
+                none;
+        }
+
+
+        .history-item strong {
+
+            display:
+                block;
+
+            margin-bottom:
+                6px;
+        }
+
+
+        .history-item small {
+
+            color:
+                #64748b;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 850px) {
+
+            .tools-grid {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+        }
+
+
+        @media (max-width: 800px) {
+
+            header {
+
+                padding:
+                    0 18px;
+            }
+
+
+            nav {
+
+                gap:
+                    12px;
+
+                overflow-x:
+                    auto;
+            }
+
+
+            nav a {
+
+                display:
+                    none;
+            }
+
+
+            .system-status {
+
+                display:
+                    none;
+            }
+
+
+            main {
+
+                padding:
+                    30px 18px 55px;
+            }
+
+
+            .score-card {
+
+                grid-template-columns:
+                    1fr;
+            }
+
+
+            .score-display {
+
+                justify-content:
+                    flex-start;
+            }
+
+
+            .checks-grid {
+
+                grid-template-columns:
+                    1fr;
+            }
+        }
+
+
+        @media (max-width: 600px) {
+
+            .page-header h2 {
+
+                font-size:
+                    27px;
+            }
+
+
+            .scanner-card {
+
+                padding:
+                    22px;
+            }
+
+
+            .input-row {
+
+                flex-direction:
+                    column;
+            }
+
+
+            #scanButton {
+
+                width:
+                    100%;
+            }
+
+
+            .result-header {
+
+                flex-direction:
+                    column;
+
+                align-items:
+                    flex-start;
+            }
+
+
+            .tools-grid {
+
+                grid-template-columns:
+                    1fr;
+            }
+
+
+            .tool-card p {
+
+                min-height:
+                    auto;
+            }
+        }
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         HEADER
+    ===================================================== -->
+
+    <header>
+
+        <h1>
+            Cybersecurity Threat Detection &amp; Analysis System
+        </h1>
+
+
+        <nav>
+
+            <a href="dashboard.html">
+                Dashboard
+            </a>
+
+            <a href="scanner.html">
+                Scanner
+            </a>
+
+            <a href="chatbot.html">
+                AI Assistant
+            </a>
+
+            <a href="ip-awareness.html">
+                IP Awareness
+            </a>
+
+            <span class="system-status">
+
+                <span class="status-dot"></span>
+
+                <span>
+                    SYSTEM<br>
+                    ONLINE
+                </span>
+
+            </span>
+
+        </nav>
+
+    </header>
+
+
+    <!-- =====================================================
+         MAIN
+    ===================================================== -->
+
+    <main>
+
+
+        <!-- =================================================
+             PAGE HEADER
+        ================================================== -->
+
+        <section class="page-header">
+
+            <h2>
+                Security Scanner
+            </h2>
+
+            <p>
+                Enter a website URL to perform a frontend
+                security assessment for common security
+                configuration issues.
+            </p>
+
+        </section>
+
+
+        <!-- =================================================
+             MAIN SCANNER
+        ================================================== -->
+
+        <section class="scanner-card">
+
+            <h3>
+                Scan a Website
+            </h3>
+
+            <p>
+                Enter the complete website address, including
+                http:// or https://.
+            </p>
+
+
+            <div class="input-row">
+
+                <input type="url" id="websiteUrl" placeholder="https://example.com" autocomplete="url">
+
+
+                <button type="button" id="scanButton">
+                    Scan Website
+                </button>
+
+            </div>
+
+
+            <div id="loading">
+
+                🔍 Scanning website...
+
+                Please wait.
+
+            </div>
+
+
+            <div id="errorMessage"></div>
+
+        </section>
+
+
+        <!-- =================================================
+             ADDITIONAL SECURITY TOOLS
+        ================================================== -->
+
+        <section class="additional-tools">
+
+
+            <div class="feature-nav">
+
+                <a href="#url-tool">
+                    URL Scanner
+                </a>
+
+                <a href="#phishing-tool">
+                    Phishing Detector
+                </a>
+
+                <a href="#headers-tool">
+                    Security Headers
+                </a>
+
+                <a href="#ip-tool">
+                    IP Analyzer
+                </a>
+
+                <a href="#history-tool">
+                    Scan History
+                </a>
+
+                <a href="#report-tool">
+                    Security Report
+                </a>
+
+            </div>
+
+
+            <div class="tools-heading">
+
+                <h3>
+                    Additional Security Tools
+                </h3>
+
+                <p>
+                    Use these lightweight frontend tools to perform
+                    additional security checks.
+                </p>
+
+            </div>
+
+
+            <div class="tools-grid">
+
+
+                <!-- URL SCANNER -->
+
+                <div class="tool-card" id="url-tool">
+
+                    <div class="tool-icon">
+                        🔎
+                    </div>
+
+                    <h4>
+                        URL Scanner
+                    </h4>
+
+                    <p>
+                        Inspect a URL for HTTPS, suspicious keywords,
+                        ports, and basic URL structure.
+                    </p>
+
+                    <button type="button" class="tool-button" data-tool="url">
+                        Open Tool →
+                    </button>
+
+                </div>
+
+
+                <!-- PHISHING -->
+
+                <div class="tool-card" id="phishing-tool">
+
+                    <div class="tool-icon">
+                        🎣
+                    </div>
+
+                    <h4>
+                        Phishing Detector
+                    </h4>
+
+                    <p>
+                        Check a website address for common phishing
+                        indicators.
+                    </p>
+
+                    <button type="button" class="tool-button" data-tool="phishing">
+                        Open Tool →
+                    </button>
+
+                </div>
+
+
+                <!-- HEADERS -->
+
+                <div class="tool-card" id="headers-tool">
+
+                    <div class="tool-icon">
+                        🛡️
+                    </div>
+
+                    <h4>
+                        Security Header Check
+                    </h4>
+
+                    <p>
+                        Review common security headers for a supplied
+                        website URL.
+                    </p>
+
+                    <button type="button" class="tool-button" data-tool="headers">
+                        Open Tool →
+                    </button>
+
+                </div>
+
+
+                <!-- IP -->
+
+                <div class="tool-card" id="ip-tool">
+
+                    <div class="tool-icon">
+                        🌐
+                    </div>
+
+                    <h4>
+                        IP Address Analyzer
+                    </h4>
+
+                    <p>
+                        Identify whether an address is IPv4, private,
+                        public, or invalid.
+                    </p>
+
+                    <button type="button" class="tool-button" data-tool="ip">
+                        Open Tool →
+                    </button>
+
+                </div>
+
+
+                <!-- HISTORY -->
+
+                <div class="tool-card" id="history-tool">
+
+                    <div class="tool-icon">
+                        🕘
+                    </div>
+
+                    <h4>
+                        Scan History
+                    </h4>
+
+                    <p>
+                        View the latest scans already saved in your
+                        browser.
+                    </p>
+
+                    <button type="button" class="tool-button" data-tool="history">
+                        Open Tool →
+                    </button>
+
+                </div>
+
+
+                <!-- REPORT -->
+
+                <div class="tool-card" id="report-tool">
+
+                    <div class="tool-icon">
+                        📄
+                    </div>
+
+                    <h4>
+                        Security Report
+                    </h4>
+
+                    <p>
+                        Generate a printable report from the latest
+                        completed scan.
+                    </p>
+
+                    <button type="button" class="tool-button" data-tool="report">
+                        Generate Report →
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div id="toolPanel" class="tool-panel" style="display:none;"></div>
+
+        </section>
+
+
+        <!-- =================================================
+             MAIN SCAN RESULTS
+        ================================================== -->
+
+        <section id="results">
+
+
+            <div class="result-header">
+
+                <div>
+
+                    <h3>
+                        Security Scan Result
+                    </h3>
+
+                    <div class="website-address" id="resultWebsite"></div>
+
+                </div>
+
+            </div>
+
+
+            <!-- SCORE -->
+
+            <div class="score-card">
+
+                <div class="score-display">
+
+                    <div class="score-circle" id="resultScoreCircle" style="--score-angle:0deg;">
+
+                        <div class="score-number">
+
+                            <span id="scoreNumber">
+                                0
+                            </span>
+
+                            <span class="score-out-of">
+                                /100
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="score-summary">
+
+                    <h3 id="scoreTitle">
+                        Security Score
+                    </h3>
+
+                    <p id="scoreDescription">
+                        Scan results will appear here.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- CHECKS -->
+
+            <div class="checks-grid" id="checksGrid"></div>
+
+
+            <!-- RECOMMENDATIONS -->
+
+            <div class="recommendations">
+
+                <h3>
+                    Security Recommendations
+                </h3>
+
+                <ul id="recommendationsList">
+                </ul>
+
+            </div>
+
+
+            <a href="dashboard.html" class="back-button">
+                ← Back to Dashboard
+            </a>
+
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ===================================================== -->
+
+    <script>
+
+
+        /* =====================================================
+           ELEMENTS
+        ===================================================== */
+
+        const websiteUrl =
+            document.getElementById(
+                "websiteUrl"
+            );
+
+
+        const scanButton =
+            document.getElementById(
+                "scanButton"
+            );
+
+
+        const loading =
+            document.getElementById(
+                "loading"
+            );
+
+
+        const errorMessage =
+            document.getElementById(
+                "errorMessage"
+            );
+
+
+        const results =
+            document.getElementById(
+                "results"
+            );
+
+
+        const resultWebsite =
+            document.getElementById(
+                "resultWebsite"
+            );
+
+
+        const scoreNumber =
+            document.getElementById(
+                "scoreNumber"
+            );
+
+
+        const scoreCircle =
+            document.getElementById(
+                "resultScoreCircle"
+            );
+
+
+        const scoreTitle =
+            document.getElementById(
+                "scoreTitle"
+            );
+
+
+        const scoreDescription =
+            document.getElementById(
+                "scoreDescription"
+            );
+
+
+        const checksGrid =
+            document.getElementById(
+                "checksGrid"
+            );
+
+
+        const recommendationsList =
+            document.getElementById(
+                "recommendationsList"
+            );
+
+
+        const toolPanel =
+            document.getElementById(
+                "toolPanel"
+            );
+
+
+        /* =====================================================
+           ERROR
+        ===================================================== */
+
+        function showError(message) {
+
+            errorMessage.textContent =
+                message;
+
+            errorMessage.style.display =
+                "block";
+        }
+
+
+        function hideError() {
+
+            errorMessage.textContent =
+                "";
+
+            errorMessage.style.display =
+                "none";
+        }
+
+
+        /* =====================================================
+           URL NORMALIZATION
+        ===================================================== */
+
+        function normalizeUrl(value) {
+
+            let url =
+                value.trim();
+
+
+            if (!url) {
+
+                return null;
+            }
+
+
+            if (
+                !url.startsWith("http://") &&
+                !url.startsWith("https://")
+            ) {
+
+                url =
+                    "https://" + url;
+            }
+
+
+            try {
+
+                return new URL(url);
+
+            } catch (error) {
+
+                return null;
+            }
+        }
+
+
+        /* =====================================================
+           MAIN WEBSITE ANALYSIS
+        ===================================================== */
+
+        function analyzeWebsite(urlObject) {
+
+            const url =
+                urlObject.href;
+
+            const protocol =
+                urlObject.protocol;
+
+            const hostname =
+                urlObject.hostname;
+
+            const pathname =
+                urlObject.pathname || "/";
+
+            const hasQuery =
+                urlObject.search.length > 0;
+
+
+            const httpsPassed =
+                protocol === "https:";
+
+
+            const suspiciousTerms = [
+
+                "login",
+                "verify",
+                "account",
+                "secure-login",
+                "free",
+                "bonus",
+                "claim",
+                "wallet",
+                "password"
+
+            ];
+
+
+            const lowerUrl =
+                url.toLowerCase();
+
+
+            const suspiciousMatches =
+                suspiciousTerms.filter(
+                    function (term) {
+
+                        return lowerUrl.includes(
+                            term
+                        );
+
+                    }
+                );
+
+
+            const suspiciousUrl =
+                suspiciousMatches.length === 0;
+
+
+            const domainPassed =
+                hostname.length > 3 &&
+                hostname.includes(".");
+
+
+            const usesIpAddress =
+                /^(?:\d{1,3}\.){3}\d{1,3}$/
+                    .test(hostname);
+
+
+            let score =
+                0;
+
+
+            if (httpsPassed) {
+
+                score += 45;
+            }
+
+
+            if (domainPassed) {
+
+                score += 25;
+            }
+
+
+            if (suspiciousUrl) {
+
+                score += 20;
+            }
+
+
+            if (!usesIpAddress) {
+
+                score += 10;
+            }
+
+
+            let issues =
+                0;
+
+
+            if (!httpsPassed) {
+
+                issues++;
+            }
+
+
+            if (!domainPassed) {
+
+                issues++;
+            }
+
+
+            if (!suspiciousUrl) {
+
+                issues++;
+            }
+
+
+            if (usesIpAddress) {
+
+                issues++;
+            }
+
+
+            /*
+             * Detailed checks
+             */
+
+            const checks = [
+
+                {
+
+                    title:
+                        "HTTPS Connection",
+
+                    passed:
+                        httpsPassed,
+
+                    description:
+
+                        httpsPassed
+
+                            ?
+
+                            "HTTPS is enabled. This encrypts communication between the browser and website and helps protect information while it is being transmitted."
+
+                            :
+
+                            "HTTPS is not enabled. HTTP does not provide transport encryption, so credentials and other sensitive information should not be entered until the website is verified."
+
+                },
+
+
+                {
+
+                    title:
+                        "Domain Format",
+
+                    passed:
+                        domainPassed,
+
+                    description:
+
+                        domainPassed
+
+                            ?
+
+                            "The hostname follows a basic domain-style structure. This confirms only the visible URL format; it does not confirm domain ownership, reputation or safety."
+
+                            :
+
+                            "The hostname does not match the basic domain structure expected by this scanner. Verify the address carefully before trusting the website."
+
+                },
+
+
+                {
+
+                    title:
+                        "Suspicious URL Indicators",
+
+                    passed:
+                        suspiciousUrl,
+
+                    description:
+
+                        suspiciousUrl
+
+                            ?
+
+                            "No configured suspicious keywords were found. This is only a pattern check and does not prove that the website is safe."
+
+                            :
+
+                            "Potentially suspicious keyword(s) were found: " +
+                            suspiciousMatches.join(", ") +
+                            ". These words can be legitimate, but attackers may also use them in phishing links."
+
+                },
+
+
+                {
+
+                    title:
+                        "Direct IP Address",
+
+                    passed:
+                        !usesIpAddress,
+
+                    description:
+
+                        !usesIpAddress
+
+                            ?
+
+                            "The website uses a hostname instead of a raw IPv4 address. This is common for public websites, but a domain name alone does not establish trust."
+
+                            :
+
+                            "The website is being accessed directly through an IP address. This can be legitimate, but unfamiliar destinations using raw IP addresses deserve additional verification."
+
+                },
+
+
+                {
+
+                    title:
+                        "Query Parameters",
+
+                    passed:
+                        !hasQuery,
+
+                    description:
+
+                        !hasQuery
+
+                            ?
+
+                            "No query parameters are present in the URL."
+
+                            :
+
+                            "Query parameters are present. They can be legitimate, but passwords, session tokens and other sensitive information should not normally be exposed in URLs."
+
+                },
+
+
+                {
+
+                    title:
+                        "URL Path",
+
+                    passed:
+                        pathname.length <= 120,
+
+                    description:
+
+                        pathname.length <= 120
+
+                            ?
+
+                            "The URL path is within a normal length range for this basic frontend check."
+
+                            :
+
+                            "The URL path is unusually long. A long URL is not automatically malicious, but complex addresses should be reviewed carefully."
+
+                }
+
+            ];
+
+
+            /*
+             * Recommendations
+             */
+
+            const recommendations =
+                [];
+
+
+            if (!httpsPassed) {
+
+                recommendations.push(
+                    "Use HTTPS before submitting passwords, payment details or other sensitive information."
+                );
+            }
+
+
+            if (!domainPassed) {
+
+                recommendations.push(
+                    "Verify that the hostname is correct and that you are visiting the intended domain."
+                );
+            }
+
+
+            if (!suspiciousUrl) {
+
+                recommendations.push(
+                    "Review suspicious URL keywords and verify the domain through an independent trusted source before entering credentials."
+                );
+            }
+
+
+            if (usesIpAddress) {
+
+                recommendations.push(
+                    "Be cautious when an unfamiliar website is accessed directly through an IP address."
+                );
+            }
+
+
+            if (hasQuery) {
+
+                recommendations.push(
+                    "Avoid placing passwords, session tokens or other sensitive information in URL query parameters."
+                );
+            }
+
+
+            if (recommendations.length === 0) {
+
+                recommendations.push(
+                    "No basic issues were detected by this frontend demonstration scanner."
+                );
+
+                recommendations.push(
+                    "Continue using strong authentication, secure headers, software updates and regular vulnerability assessments."
+                );
+
+                recommendations.push(
+                    "Use an authorized threat-intelligence or vulnerability-scanning service when a deeper assessment is required."
+                );
+            }
+
+
+            return {
+
+                website:
+                    url,
+
+                hostname:
+                    hostname,
+
+                score:
+                    score,
+
+                issues:
+                    issues,
+
+                checks:
+                    checks,
+
+                recommendations:
+                    recommendations
+            };
+        }
+
+
+        /* =====================================================
+           SCORE INFORMATION
+        ===================================================== */
+
+        function getScoreInformation(score) {
+
+            if (score >= 80) {
+
+                return {
+
+                    title:
+                        "Good Security",
+
+                    description:
+                        "The website passed most basic structural checks. This indicates a stronger baseline, but it is not a guarantee that the website is free from vulnerabilities, phishing or malicious content. Review the individual findings for context."
+                };
+            }
+
+
+            if (score >= 60) {
+
+                return {
+
+                    title:
+                        "Moderate Security",
+
+                    description:
+                        "The website passed several checks, but one or more indicators require attention. Review failed checks and verify the destination before submitting sensitive information."
+                };
+            }
+
+
+            if (score >= 40) {
+
+                return {
+
+                    title:
+                        "Needs Attention",
+
+                    description:
+                        "Several basic security indicators require attention. Treat the result as a warning, review each finding and avoid unnecessary exposure of credentials or sensitive information."
+                };
+            }
+
+
+            return {
+
+                title:
+                    "At Risk",
+
+                description:
+                    "Multiple basic security indicators failed. Treat the website with caution and verify the destination through a trusted source before entering credentials, financial information or other sensitive data."
+            };
+        }
+
+
+        /* =====================================================
+           ESCAPE HTML
+        ===================================================== */
+
+        function escapeHtml(value) {
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+
+            div.textContent =
+                String(value);
+
+
+            return div.innerHTML;
+        }
+
+
+        /* =====================================================
+           DISPLAY MAIN RESULTS
+        ===================================================== */
+
+        function displayResults(scanData) {
+
+            results.style.display =
+                "block";
+
+
+            resultWebsite.textContent =
+                scanData.website;
+
+
+            scoreNumber.textContent =
+                scanData.score;
+
+
+            scoreCircle.style.setProperty(
+                "--score-angle",
+                (scanData.score * 3.6) +
+                "deg"
+            );
+
+
+            const scoreInfo =
+                getScoreInformation(
+                    scanData.score
+                );
+
+
+            scoreTitle.textContent =
+                scoreInfo.title;
+
+
+            scoreDescription.textContent =
+                scoreInfo.description;
+
+
+            checksGrid.innerHTML =
+                scanData.checks.map(
+                    function (check) {
+
+                        const statusClass =
+                            check.passed
+                                ? "status-pass"
+                                : "status-danger";
+
+
+                        const statusText =
+                            check.passed
+                                ? "PASS"
+                                : "ISSUE";
+
+
+                        return `
+
+                            <div class="check-card">
+
+                                <div class="check-top">
+
+                                    <strong>
+                                        ${escapeHtml(
+                            check.title
+                        )}
+                                    </strong>
+
+                                    <span
+                                        class="check-status ${statusClass}"
+                                    >
+                                        ${statusText}
+                                    </span>
+
+                                </div>
+
+                                <p>
+                                    ${escapeHtml(
+                            check.description
+                        )}
+                                </p>
+
+                            </div>
+
+                        `;
+
+                    }
+                ).join("");
+
+
+            recommendationsList.innerHTML =
+                scanData.recommendations.map(
+                    function (recommendation) {
+
+                        return `
+
+                            <li>
+                                ${escapeHtml(
+                            recommendation
+                        )}
+                            </li>
+
+                        `;
+
+                    }
+                ).join("");
+
+
+            results.scrollIntoView({
+
+                behavior:
+                    "smooth",
+
+                block:
+                    "start"
+
+            });
+        }
+
+
+        /* =====================================================
+           SAVE SCAN
+        ===================================================== */
+
+        function saveScan(scanData) {
+
+            const scan = {
+
+                website:
+                    scanData.website,
+
+                hostname:
+                    scanData.hostname,
+
+                score:
+                    scanData.score,
+
+                issues:
+                    scanData.issues,
+
+                checks:
+                    scanData.checks,
+
+                recommendations:
+                    scanData.recommendations,
+
+                date:
+                    new Date().toISOString()
+
+            };
+
+
+            localStorage.setItem(
+                "lastScan",
+                JSON.stringify(scan)
+            );
+
+
+            let history =
+                [];
+
+
+            try {
+
+                const savedHistory =
+                    localStorage.getItem(
+                        "scanHistory"
+                    );
+
+
+                if (savedHistory) {
+
+                    history =
+                        JSON.parse(
+                            savedHistory
+                        );
+
+                }
+
+            } catch (error) {
+
+                history =
+                    [];
+            }
+
+
+            if (!Array.isArray(history)) {
+
+                history =
+                    [];
+            }
+
+
+            history.push(
+                scan
+            );
+
+
+            if (history.length > 20) {
+
+                history =
+                    history.slice(-20);
+            }
+
+
+            localStorage.setItem(
+                "scanHistory",
+                JSON.stringify(history)
+            );
+        }
+
+
+        /* =====================================================
+           MAIN SCAN
+        ===================================================== */
+
+        function scanWebsite() {
+
+            hideError();
+
+
+            const urlObject =
+                normalizeUrl(
+                    websiteUrl.value
+                );
+
+
+            if (!urlObject) {
+
+                showError(
+                    "Please enter a valid website URL."
+                );
+
+                websiteUrl.focus();
+
+                return;
+            }
+
+
+            if (
+                urlObject.protocol !== "http:" &&
+                urlObject.protocol !== "https:"
+            ) {
+
+                showError(
+                    "Only HTTP and HTTPS website URLs are supported."
+                );
+
+                return;
+            }
+
+
+            scanButton.disabled =
+                true;
+
+
+            loading.style.display =
+                "block";
+
+
+            results.style.display =
+                "none";
+
+
+            setTimeout(
+                function () {
+
+                    try {
+
+                        const scanData =
+                            analyzeWebsite(
+                                urlObject
+                            );
+
+
+                        saveScan(
+                            scanData
+                        );
+
+
+                        displayResults(
+                            scanData
+                        );
+
+
+                    } catch (error) {
+
+                        console.error(
+                            "Scanner error:",
+                            error
+                        );
+
+
+                        showError(
+                            "An error occurred while scanning the website."
+                        );
+
+                    }
+
+
+                    scanButton.disabled =
+                        false;
+
+
+                    loading.style.display =
+                        "none";
+
+                },
+
+                900
+            );
+        }
+
+
+        /* =====================================================
+           TOOL BUTTONS
+        ===================================================== */
+
+        document
+            .querySelectorAll(".tool-button")
+            .forEach(
+                function (button) {
+
+                    button.addEventListener(
+                        "click",
+                        function () {
+
+                            const tool =
+                                button.dataset.tool;
+
+
+                            if (tool === "url") {
+
+                                openUrlTool();
+                            }
+
+
+                            if (tool === "phishing") {
+
+                                openPhishingTool();
+                            }
+
+
+                            if (tool === "headers") {
+
+                                openHeaderTool();
+                            }
+
+
+                            if (tool === "ip") {
+
+                                openIpTool();
+                            }
+
+
+                            if (tool === "history") {
+
+                                openHistoryTool();
+                            }
+
+
+                            if (tool === "report") {
+
+                                generateSecurityReport();
+                            }
+
+                        }
+                    );
+
+                }
+            );
+
+
+        /* =====================================================
+           SHOW TOOL PANEL
+        ===================================================== */
+
+        function showToolPanel(
+            title,
+            description,
+            content
+        ) {
+
+            toolPanel.innerHTML = `
+
+                <h4>
+                    ${escapeHtml(title)}
+                </h4>
+
+                <p>
+                    ${escapeHtml(description)}
+                </p>
+
+                ${content}
+
+            `;
+
+
+            toolPanel.style.display =
+                "block";
+
+
+            toolPanel.scrollIntoView({
+
+                behavior:
+                    "smooth",
+
+                block:
+                    "nearest"
+
+            });
+        }
+
+
+        /* =====================================================
+           URL SCANNER
+        ===================================================== */
+
+        function openUrlTool() {
+
+            showToolPanel(
+
+                "URL Scanner",
+
+                "Perform a detailed analysis of protocol, hostname, port, path, query parameters and suspicious URL keywords.",
+
+                `
+
+                    <div class="tool-form">
+
+                        <input
+                            type="text"
+                            id="urlToolInput"
+                            placeholder="https://example.com"
+                        >
+
+                        <button
+                            type="button"
+                            id="urlToolButton"
+                        >
+                            Analyze URL
+                        </button>
+
+                    </div>
+
+
+                    <div id="urlToolResult"></div>
+
+                `
+            );
+
+
+            document
+                .getElementById("urlToolButton")
+                .addEventListener(
+                    "click",
+                    function () {
+
+                        const input =
+                            document
+                                .getElementById(
+                                    "urlToolInput"
+                                )
+                                .value
+                                .trim();
+
+
+                        const result =
+                            document
+                                .getElementById(
+                                    "urlToolResult"
+                                );
+
+
+                        const urlObject =
+                            normalizeUrl(
+                                input
+                            );
+
+
+                        if (!urlObject) {
+
+                            result.innerHTML = `
+
+                                <div class="tool-result">
+
+                                    <strong class="tool-danger">
+                                        Invalid URL
+                                    </strong>
+
+                                    <p>
+                                        The supplied value is not a valid
+                                        HTTP or HTTPS website address.
+                                    </p>
+
+                                    <ul>
+
+                                        <li>
+                                            Check that the hostname
+                                            is complete.
+                                        </li>
+
+                                        <li>
+                                            Example:
+                                            https://example.com
+                                        </li>
+
+                                        <li>
+                                            Remove spaces or incomplete
+                                            URL sections.
+                                        </li>
+
+                                    </ul>
+
+                                </div>
+
+                            `;
+
+                            return;
+                        }
+
+
+                        const protocol =
+                            urlObject.protocol
+                                .replace(
+                                    ":",
+                                    ""
+                                )
+                                .toUpperCase();
+
+
+                        const hostname =
+                            urlObject.hostname;
+
+
+                        const pathname =
+                            urlObject.pathname || "/";
+
+
+                        const port =
+                            urlObject.port ||
+                            (
+                                urlObject.protocol === "https:"
+                                    ? "443"
+                                    : "80"
+                            );
+
+
+                        const hasQuery =
+                            urlObject.search.length > 0;
+
+
+                        const queryParameters =
+                            hasQuery
+                                ? urlObject.search.substring(1)
+                                : "None";
+
+
+                        const suspiciousTerms = [
+
+                            "login",
+                            "verify",
+                            "account",
+                            "secure-login",
+                            "free",
+                            "bonus",
+                            "claim",
+                            "wallet",
+                            "password"
+
+                        ];
+
+
+                        const lowerUrl =
+                            urlObject.href.toLowerCase();
+
+
+                        const matches =
+                            suspiciousTerms.filter(
+                                function (term) {
+
+                                    return lowerUrl.includes(
+                                        term
+                                    );
+
+                                }
+                            );
+
+
+                        const isHttps =
+                            urlObject.protocol === "https:";
+
+
+                        const isIpAddress =
+                            /^(?:\d{1,3}\.){3}\d{1,3}$/
+                                .test(
+                                    hostname
+                                );
+
+
+                        let riskLevel =
+                            "Low";
+
+
+                        let riskClass =
+                            "tool-pass";
+
+
+                        if (
+                            !isHttps ||
+                            matches.length > 0 ||
+                            isIpAddress
+                        ) {
+
+                            riskLevel =
+                                "Medium";
+
+                            riskClass =
+                                "tool-warning";
+                        }
+
+
+                        if (
+                            !isHttps &&
+                            matches.length > 0 &&
+                            isIpAddress
+                        ) {
+
+                            riskLevel =
+                                "High";
+
+                            riskClass =
+                                "tool-danger";
+                        }
+
+
+                        result.innerHTML = `
+
+                            <div class="tool-result">
+
+                                <strong>
+                                    Detailed URL Analysis
+                                </strong>
+
+
+                                <p>
+                                    The scanner inspected the URL
+                                    locally in your browser. It checks
+                                    the protocol, hostname, port, path,
+                                    query parameters and basic suspicious
+                                    indicators.
+                                </p>
+
+
+                                <ul>
+
+                                    <li>
+                                        <strong>
+                                            Complete URL:
+                                        </strong>
+
+                                        ${escapeHtml(
+                            urlObject.href
+                        )}
+                                    </li>
+
+
+                                    <li>
+                                        <strong>
+                                            Protocol:
+                                        </strong>
+
+                                        ${escapeHtml(
+                            protocol
+                        )}
+                                    </li>
+
+
+                                    <li>
+                                        <strong>
+                                            Hostname:
+                                        </strong>
+
+                                        ${escapeHtml(
+                            hostname
+                        )}
+                                    </li>
+
+
+                                    <li>
+                                        <strong>
+                                            Path:
+                                        </strong>
+
+                                        ${escapeHtml(
+                            pathname
+                        )}
+                                    </li>
+
+
+                                    <li>
+                                        <strong>
+                                            Port:
+                                        </strong>
+
+                                        ${escapeHtml(
+                            port
+                        )}
+                                    </li>
+
+
+                                    <li>
+                                        <strong>
+                                            Query Parameters:
+                                        </strong>
+
+                                        ${escapeHtml(
+                            queryParameters
+                        )}
+                                    </li>
+
+
+                                    <li>
+
+                                        <strong>
+                                            HTTPS:
+                                        </strong>
+
+                                        <span
+                                            class="${isHttps
+                                ? "tool-pass"
+                                : "tool-danger"
+                            }"
+                                        >
+
+                                            ${isHttps
+                                ? "Enabled"
+                                : "Not enabled"
+                            }
+
+                                        </span>
+
+                                    </li>
+
+
+                                    <li>
+
+                                        <strong>
+                                            Direct IP Address:
+                                        </strong>
+
+                                        <span
+                                            class="${isIpAddress
+                                ? "tool-warning"
+                                : "tool-pass"
+                            }"
+                                        >
+
+                                            ${isIpAddress
+                                ? "Detected"
+                                : "Not detected"
+                            }
+
+                                        </span>
+
+                                    </li>
+
+
+                                    <li>
+
+                                        <strong>
+                                            Suspicious Keywords:
+                                        </strong>
+
+                                        <span
+                                            class="${matches.length
+                                ? "tool-warning"
+                                : "tool-pass"
+                            }"
+                                        >
+
+                                            ${matches.length
+                                ? escapeHtml(
+                                    matches.join(", ")
+                                )
+                                : "None detected"
+                            }
+
+                                        </span>
+
+                                    </li>
+
+                                </ul>
+
+
+                                <hr
+                                    style="
+                                        border:0;
+                                        border-top:1px solid rgba(45,215,196,0.12);
+                                        margin:18px 0;
+                                    "
+                                >
+
+
+                                <strong>
+                                    What Each Result Means
+                                </strong>
+
+
+                                <ul>
+
+                                    <li>
+
+                                        <strong>
+                                            HTTPS:
+                                        </strong>
+
+                                        HTTPS encrypts communication
+                                        between the browser and website.
+                                        If HTTPS is missing, sensitive
+                                        information may be exposed during
+                                        transmission.
+
+                                    </li>
+
+
+                                    <li>
+
+                                        <strong>
+                                            Hostname:
+                                        </strong>
+
+                                        The hostname identifies the
+                                        website domain being accessed.
+                                        The hostname itself does not prove
+                                        ownership or trust.
+
+                                    </li>
+
+
+                                    <li>
+
+                                        <strong>
+                                            Port:
+                                        </strong>
+
+                                        The port identifies the network
+                                        service endpoint. HTTPS normally
+                                        uses 443 and HTTP normally uses
+                                        80 when no custom port is specified.
+
+                                    </li>
+
+
+                                    <li>
+
+                                        <strong>
+                                            Query Parameters:
+                                        </strong>
+
+                                        Query parameters are values supplied
+                                        after the question mark in a URL.
+                                        They can be legitimate, but sensitive
+                                        information should not normally be
+                                        exposed through URLs.
+
+                                    </li>
+
+
+                                    <li>
+
+                                        <strong>
+                                            Suspicious Keywords:
+                                        </strong>
+
+                                        Words such as login, verify,
+                                        account, wallet or password can
+                                        sometimes appear in phishing URLs.
+                                        Their presence alone does not prove
+                                        that a website is malicious.
+
+                                    </li>
+
+
+                                    <li>
+
+                                        <strong>
+                                            Direct IP Address:
+                                        </strong>
+
+                                        A website accessed directly through
+                                        an IP address deserves additional
+                                        verification because legitimate
+                                        public websites commonly use domain
+                                        names.
+
+                                    </li>
+
+                                </ul>
+
+
+                                <p>
+
+                                    <strong>
+                                        Overall URL Risk:
+                                    </strong>
+
+                                    <span
+                                        class="${riskClass}"
+                                    >
+                                        ${riskLevel}
+                                    </span>
+
+                                </p>
+
+
+                                <p>
+
+                                    This is a frontend inspection tool.
+                                    It does not confirm malware, domain
+                                    reputation, ownership, vulnerabilities
+                                    or whether the destination is safe.
+
+                                </p>
+
+                            </div>
+
+                        `;
+
+                    }
+                );
+        }
+
+
+        /* =====================================================
+           PHISHING DETECTOR
+        ===================================================== */
+
+        function openPhishingTool() {
+
+            showToolPanel(
+
+                "Phishing Detector",
+
+                "Perform a detailed rule-based phishing assessment using URL characteristics. This does not replace a professional reputation service.",
+
+                `
+
+                    <div class="tool-form">
+
+                        <input
+                            type="text"
+                            id="phishingInput"
+                            placeholder="https://example.com"
+                        >
+
+                        <button
+                            type="button"
+                            id="phishingButton"
+                        >
+                            Check URL
+                        </button>
+
+                    </div>
+
+
+                    <div id="phishingResult"></div>
+
+                `
+            );
+
+
+            document
+                .getElementById("phishingButton")
+                .addEventListener(
+                    "click",
+                    function () {
+
+                        const value =
+                            document
+                                .getElementById(
+                                    "phishingInput"
+                                )
+                                .value
+                                .trim();
+
+
+                        const result =
+                            document
+                                .getElementById(
+                                    "phishingResult"
+                                );
+
+
+                        const urlObject =
+                            normalizeUrl(
+                                value
+                            );
+
+
+                        if (!urlObject) {
+
+                            result.innerHTML = `
+
+                                <div class="tool-result">
+
+                                    <strong class="tool-danger">
+                                        Invalid URL
+                                    </strong>
+
+                                    <p>
+                                        The supplied value cannot be
+                                        analyzed because it is not a
+                                        valid website URL.
+                                    </p>
+
+                                </div>
+
+                            `;
+
+                            return;
+                        }
+
+
+                        const url =
+                            urlObject.href.toLowerCase();
+
+
+                        const indicators =
+                            [];
+
+
+                        if (
+                            urlObject.protocol !== "https:"
+                        ) {
+
+                            indicators.push({
+
+                                title:
+                                    "HTTPS is not enabled",
+
+                                severity:
+                                    "High",
+
+                                explanation:
+                                    "The website is using HTTP instead of HTTPS. Missing HTTPS does not automatically prove phishing, but sensitive information should not be entered until the site is verified."
+
+                            });
+
+                        }
+
+
+                        [
+
+                            "login",
+                            "verify",
+                            "account",
+                            "secure-login",
+                            "free",
+                            "bonus",
+                            "claim",
+                            "wallet",
+                            "password"
+
+                        ].forEach(
+                            function (term) {
+
+                                if (
+                                    url.includes(term)
+                                ) {
+
+                                    indicators.push({
+
+                                        title:
+                                            "Suspicious keyword detected: " +
+                                            term,
+
+                                        severity:
+                                            "Medium",
+
+                                        explanation:
+                                            "The URL contains the word '" +
+                                            term +
+                                            "'. Attackers may use terms related to login, verification, rewards, accounts or wallets to make fraudulent links appear legitimate. The keyword alone does not prove malicious activity."
+
+                                    });
+
+                                }
+
+                            }
+                        );
+
+
+                        if (
+                            /^(?:\d{1,3}\.){3}\d{1,3}$/
+                                .test(
+                                    urlObject.hostname
+                                )
+                        ) {
+
+                            indicators.push({
+
+                                title:
+                                    "Website uses a direct IP address",
+
+                                severity:
+                                    "Medium",
+
+                                explanation:
+                                    "The destination is accessed through an IPv4 address instead of a normal domain. This can be legitimate, but unfamiliar sites using raw IP addresses should be verified carefully."
+
+                            });
+
+                        }
+
+
+                        const suspicious =
+                            indicators.length > 0;
+
+
+                        let risk =
+                            "Low";
+
+
+                        let riskClass =
+                            "tool-pass";
+
+
+                        if (
+                            indicators.length === 1
+                        ) {
+
+                            risk =
+                                "Medium";
+
+                            riskClass =
+                                "tool-warning";
+                        }
+
+
+                        if (
+                            indicators.length >= 2
+                        ) {
+
+                            risk =
+                                "High";
+
+                            riskClass =
+                                "tool-danger";
+                        }
+
+
+                        result.innerHTML = `
+
+                            <div class="tool-result">
+
+                                <strong
+                                    class="${riskClass}"
+                                >
+
+                                    ${suspicious
+                                ? "Potential Phishing Indicators Found"
+                                : "No Basic Phishing Indicators Found"
+                            }
+
+                                </strong>
+
+
+                                <p>
+
+                                    <strong>
+                                        Risk Assessment:
+                                    </strong>
+
+                                    <span
+                                        class="${riskClass}"
+                                    >
+                                        ${risk}
+                                    </span>
+
+                                </p>
+
+
+                                <p>
+
+                                    The detector identified
+
+                                    <strong>
+                                        ${indicators.length}
+                                    </strong>
+
+                                    rule-based indicator(s).
+
+                                </p>
+
+
+                                ${suspicious
+
+                                ?
+
+                                `
+
+                                    <hr
+                                        style="
+                                            border:0;
+                                            border-top:1px solid rgba(45,215,196,0.12);
+                                            margin:18px 0;
+                                        "
+                                    >
+
+
+                                    <strong>
+                                        Detailed Findings
+                                    </strong>
+
+
+                                    <ul>
+
+                                        ${indicators
+                                    .map(
+                                        function (item) {
+
+                                            return `
+
+                                                            <li>
+
+                                                                <strong>
+                                                                    ${escapeHtml(
+                                                item.title
+                                            )}
+                                                                </strong>
+
+                                                                <br>
+
+                                                                <span
+                                                                    class="${item.severity === "High"
+                                                    ? "tool-danger"
+                                                    : "tool-warning"
+                                                }"
+                                                                >
+
+                                                                    Severity:
+                                                                    ${escapeHtml(
+                                                    item.severity
+                                                )}
+
+                                                                </span>
+
+                                                                <br>
+
+                                                                ${escapeHtml(
+                                                    item.explanation
+                                                )}
+
+                                                            </li>
+
+                                                        `;
+
+                                        }
+                                    )
+                                    .join("")
+                                }
+
+                                    </ul>
+
+                                    `
+
+                                :
+
+                                `
+
+                                    <p class="tool-pass">
+
+                                        The URL passed the basic
+                                        rule-based checks performed
+                                        by this frontend tool.
+
+                                    </p>
+
+
+                                    <p>
+
+                                        This does not guarantee safety.
+                                        A real phishing investigation
+                                        should also consider domain
+                                        reputation, certificates,
+                                        redirects, page content,
+                                        malware intelligence and
+                                        other security signals.
+
+                                    </p>
+
+                                    `
+                            }
+
+
+                                <hr
+                                    style="
+                                        border:0;
+                                        border-top:1px solid rgba(45,215,196,0.12);
+                                        margin:18px 0;
+                                    "
+                                >
+
+
+                                <strong>
+                                    Recommended Action
+                                </strong>
+
+
+                                <ul>
+
+                                    <li>
+                                        Verify the exact domain name
+                                        before entering credentials.
+                                    </li>
+
+                                    <li>
+                                        Do not provide passwords or
+                                        financial information to
+                                        unfamiliar websites.
+                                    </li>
+
+                                    <li>
+                                        Check HTTPS and do not assume
+                                        familiar words in a URL make
+                                        it trustworthy.
+                                    </li>
+
+                                    <li>
+                                        When in doubt, open the official
+                                        website through a trusted bookmark
+                                        or known address instead of
+                                        following an unexpected link.
+                                    </li>
+
+                                </ul>
+
+                            </div>
+
+                        `;
+
+                    }
+                );
+        }
+
+
+        /* =====================================================
+           SECURITY HEADER CHECK
+        ===================================================== */
+
+        function openHeaderTool() {
+
+            showToolPanel(
+
+                "Security Header Check",
+
+                "Review important security headers and understand what each header protects. Actual response headers require server-side verification.",
+
+                `
+
+                    <div class="tool-form">
+
+                        <input
+                            type="text"
+                            id="headerInput"
+                            placeholder="https://example.com"
+                        >
+
+                        <button
+                            type="button"
+                            id="headerButton"
+                        >
+                            Check Headers
+                        </button>
+
+                    </div>
+
+
+                    <div id="headerResult"></div>
+
+                `
+            );
+
+
+            document
+                .getElementById("headerButton")
+                .addEventListener(
+                    "click",
+                    function () {
+
+                        const value =
+                            document
+                                .getElementById(
+                                    "headerInput"
+                                )
+                                .value
+                                .trim();
+
+
+                        const result =
+                            document
+                                .getElementById(
+                                    "headerResult"
+                                );
+
+
+                        const urlObject =
+                            normalizeUrl(
+                                value
+                            );
+
+
+                        if (!urlObject) {
+
+                            result.innerHTML = `
+
+                                <div class="tool-result">
+
+                                    <strong class="tool-danger">
+                                        Invalid URL
+                                    </strong>
+
+                                    <p>
+                                        Enter a valid HTTP or HTTPS
+                                        website address before checking
+                                        security headers.
+                                    </p>
+
+                                </div>
+
+                            `;
+
+                            return;
+                        }
+
+
+                        const headers = [
+
+                            {
+
+                                name:
+                                    "Content-Security-Policy",
+
+                                purpose:
+                                    "Controls which scripts, styles, images and other resources a website is allowed to load.",
+
+                                protection:
+                                    "Helps reduce risks such as cross-site scripting and unwanted resource injection."
+
+                            },
+
+
+                            {
+
+                                name:
+                                    "Strict-Transport-Security",
+
+                                purpose:
+                                    "Instructs browsers to use HTTPS when communicating with the website.",
+
+                                protection:
+                                    "Helps prevent downgrade attacks and accidental use of insecure HTTP connections."
+
+                            },
+
+
+                            {
+
+                                name:
+                                    "X-Content-Type-Options",
+
+                                purpose:
+                                    "Prevents browsers from trying to interpret content as a different type.",
+
+                                protection:
+                                    "Helps reduce MIME-type confusion and content-sniffing risks."
+
+                            },
+
+
+                            {
+
+                                name:
+                                    "X-Frame-Options",
+
+                                purpose:
+                                    "Controls whether the website can be embedded inside a frame.",
+
+                                protection:
+                                    "Can help protect against clickjacking attacks."
+
+                            },
+
+
+                            {
+
+                                name:
+                                    "Referrer-Policy",
+
+                                purpose:
+                                    "Controls how much referrer information the browser sends to other destinations.",
+
+                                protection:
+                                    "Helps reduce unnecessary leakage of URL information."
+
+                            },
+
+
+                            {
+
+                                name:
+                                    "Permissions-Policy",
+
+                                purpose:
+                                    "Controls access to selected browser capabilities such as camera, microphone and geolocation.",
+
+                                protection:
+                                    "Helps limit unnecessary access to sensitive browser features."
+
+                            }
+
+                        ];
+
+
+                        result.innerHTML = `
+
+                            <div class="tool-result">
+
+                                <strong>
+                                    Detailed Security Header Assessment
+                                </strong>
+
+
+                                <p>
+
+                                    <strong>
+                                        Target:
+                                    </strong>
+
+                                    ${escapeHtml(
+                            urlObject.href
+                        )}
+
+                                </p>
+
+
+                                <p class="tool-warning">
+
+                                    Actual HTTP response headers cannot
+                                    be reliably inspected from this
+                                    frontend-only page because browsers
+                                    enforce cross-origin restrictions.
+
+                                </p>
+
+
+                                <p>
+
+                                    The following items explain what
+                                    should be reviewed on the target
+                                    server.
+
+                                </p>
+
+
+                                <ul>
+
+                                    ${headers
+                                .map(
+                                    function (header) {
+
+                                        return `
+
+                                                        <li>
+
+                                                            <strong>
+                                                                ${escapeHtml(
+                                            header.name
+                                        )}
+                                                            </strong>
+
+                                                            <br>
+
+                                                            <strong>
+                                                                Purpose:
+                                                            </strong>
+
+                                                            ${escapeHtml(
+                                            header.purpose
+                                        )}
+
+                                                            <br>
+
+                                                            <strong>
+                                                                Security Benefit:
+                                                            </strong>
+
+                                                            ${escapeHtml(
+                                            header.protection
+                                        )}
+
+                                                            <br>
+
+                                                            <span
+                                                                class="tool-warning"
+                                                            >
+
+                                                                Status:
+                                                                Requires
+                                                                server-side
+                                                                verification
+
+                                                            </span>
+
+                                                        </li>
+
+                                                    `;
+
+                                    }
+                                )
+                                .join("")
+                            }
+
+                                </ul>
+
+
+                                <hr
+                                    style="
+                                        border:0;
+                                        border-top:1px solid rgba(45,215,196,0.12);
+                                        margin:18px 0;
+                                    "
+                                >
+
+
+                                <strong>
+                                    Why Security Headers Matter
+                                </strong>
+
+
+                                <p>
+
+                                    Security headers add browser-enforced
+                                    protections around content loading,
+                                    HTTPS usage, framing, referrer
+                                    information and browser capabilities.
+
+                                </p>
+
+
+                                <p>
+
+                                    Missing headers are not automatically
+                                    vulnerabilities, but they can represent
+                                    security-hardening opportunities.
+
+                                </p>
+
+
+                                <p>
+
+                                    For a real assessment, inspect the
+                                    actual server response using browser
+                                    developer tools, an authorized
+                                    server-side scanner or another
+                                    approved testing environment.
+
+                                </p>
+
+                            </div>
+
+                        `;
+
+                    }
+                );
+        }
+
+
+        /* =====================================================
+           IP ADDRESS ANALYZER
+        ===================================================== */
+
+        function openIpTool() {
+
+            showToolPanel(
+
+                "IP Address Analyzer",
+
+                "Analyze an IPv4 address and determine whether it belongs to a private, public or loopback address range.",
+
+                `
+
+                    <div class="tool-form">
+
+                        <input
+                            type="text"
+                            id="ipInput"
+                            placeholder="192.168.1.10"
+                        >
+
+                        <button
+                            type="button"
+                            id="ipButton"
+                        >
+                            Analyze IP
+                        </button>
+
+                    </div>
+
+
+                    <div id="ipResult"></div>
+
+                `
+            );
+
+
+            document
+                .getElementById("ipButton")
+                .addEventListener(
+                    "click",
+                    function () {
+
+                        const value =
+                            document
+                                .getElementById(
+                                    "ipInput"
+                                )
+                                .value
+                                .trim();
+
+
+                        const result =
+                            document
+                                .getElementById(
+                                    "ipResult"
+                                );
+
+
+                        const parts =
+                            value.split(".");
+
+
+                        const valid =
+                            parts.length === 4 &&
+                            parts.every(
+                                function (part) {
+
+                                    return (
+                                        /^\d+$/.test(part) &&
+                                        Number(part) >= 0 &&
+                                        Number(part) <= 255
+                                    );
+
+                                }
+                            );
+
+
+                        if (!valid) {
+
+                            result.innerHTML = `
+
+                                <div class="tool-result">
+
+                                    <strong class="tool-danger">
+                                        Invalid IPv4 Address
+                                    </strong>
+
+                                    <p>
+
+                                        An IPv4 address must contain
+                                        exactly four numerical octets
+                                        separated by dots.
+
+                                    </p>
+
+
+                                    <ul>
+
+                                        <li>
+                                            Each octet must contain
+                                            a value from 0 to 255.
+                                        </li>
+
+                                        <li>
+                                            Example:
+                                            192.168.1.10
+                                        </li>
+
+                                        <li>
+                                            Example:
+                                            8.8.8.8
+                                        </li>
+
+                                    </ul>
+
+                                </div>
+
+                            `;
+
+                            return;
+                        }
+
+
+                        const a =
+                            Number(parts[0]);
+
+
+                        const b =
+                            Number(parts[1]);
+
+
+                        let type =
+                            "Public IPv4 Address";
+
+
+                        let explanation =
+                            "This address does not fall within the private or loopback ranges checked by this analyzer.";
+
+
+                        if (a === 10) {
+
+                            type =
+                                "Private IPv4 Address";
+
+                            explanation =
+                                "The address belongs to 10.0.0.0/8, a private range commonly used inside internal networks.";
+                        }
+
+
+                        else if (
+                            a === 172 &&
+                            b >= 16 &&
+                            b <= 31
+                        ) {
+
+                            type =
+                                "Private IPv4 Address";
+
+                            explanation =
+                                "The address belongs to 172.16.0.0/12, a private range commonly used by internal networks.";
+                        }
+
+
+                        else if (
+                            a === 192 &&
+                            b === 168
+                        ) {
+
+                            type =
+                                "Private IPv4 Address";
+
+                            explanation =
+                                "The address belongs to 192.168.0.0/16, a private range commonly used by home and office routers.";
+                        }
+
+
+                        else if (
+                            a === 127
+                        ) {
+
+                            type =
+                                "Loopback Address";
+
+                            explanation =
+                                "The 127.0.0.0/8 range is reserved for loopback communication, allowing a computer to communicate with itself.";
+                        }
+
+
+                        result.innerHTML = `
+
+                            <div class="tool-result">
+
+                                <strong class="tool-pass">
+                                    Valid IPv4 Address
+                                </strong>
+
+
+                                <ul>
+
+                                    <li>
+
+                                        <strong>
+                                            Address:
+                                        </strong>
+
+                                        ${escapeHtml(
+                            value
+                        )}
+
+                                    </li>
+
+
+                                    <li>
+
+                                        <strong>
+                                            Address Type:
+                                        </strong>
+
+                                        ${escapeHtml(
+                            type
+                        )}
+
+                                    </li>
+
+
+                                    <li>
+
+                                        <strong>
+                                            Octets:
+                                        </strong>
+
+                                        ${parts.join(" / ")}
+
+                                    </li>
+
+                                </ul>
+
+
+                                <hr
+                                    style="
+                                        border:0;
+                                        border-top:1px solid rgba(45,215,196,0.12);
+                                        margin:18px 0;
+                                    "
+                                >
+
+
+                                <strong>
+                                    Detailed Explanation
+                                </strong>
+
+
+                                <p>
+                                    ${escapeHtml(
+                            explanation
+                        )}
+                                </p>
+
+
+                                <strong>
+                                    Security Context
+                                </strong>
+
+
+                                <p>
+
+                                    Private IP addresses are normally
+                                    used inside local networks and are
+                                    commonly translated to a public IP
+                                    through NAT when communicating with
+                                    the Internet.
+
+                                </p>
+
+
+                                <p>
+
+                                    Public IP addresses may be routable
+                                    on the Internet, subject to routing
+                                    and network configuration.
+
+                                </p>
+
+
+                                <p>
+
+                                    This analyzer identifies the basic
+                                    address category locally. It does
+                                    not determine ownership, geographic
+                                    location, ISP, reputation or whether
+                                    an address is malicious.
+
+                                </p>
+
+                            </div>
+
+                        `;
+
+                    }
+                );
+        }
+
+
+        /* =====================================================
+           SCAN HISTORY
+        ===================================================== */
+
+        function openHistoryTool() {
+
+            let history =
+                [];
+
+
+            try {
+
+                const saved =
+                    localStorage.getItem(
+                        "scanHistory"
+                    );
+
+
+                history =
+                    saved
+                        ? JSON.parse(saved)
+                        : [];
+
+            } catch (error) {
+
+                history =
+                    [];
+            }
+
+
+            if (!Array.isArray(history)) {
+
+                history =
+                    [];
+            }
+
+
+            history =
+                history
+                    .slice()
+                    .reverse();
+
+
+            let content =
+                "";
+
+
+            if (history.length === 0) {
+
+                content = `
+
+                    <div class="tool-result">
+
+                        <strong>
+                            No Scan History
+                        </strong>
+
+
+                        <p>
+
+                            Run a website scan first.
+                            The latest 20 scans are stored
+                            locally in this browser.
+
+                        </p>
+
+
+                        <ul>
+
+                            <li>
+                                Each saved entry contains
+                                the website and security score.
+                            </li>
+
+                            <li>
+                                The saved scan also contains
+                                checks and recommendations.
+                            </li>
+
+                            <li>
+                                Clearing browser storage can
+                                remove this history.
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+                `;
+
+            } else {
+
+                content = `
+
+                    <div class="tool-result">
+
+                        <strong>
+                            Recent Security Scans
+                        </strong>
+
+
+                        <p>
+
+                            The newest saved scan appears first.
+                            These results describe the checks
+                            performed when each scan was created.
+
+                        </p>
+
+
+                        ${history
+                        .map(
+                            function (
+                                scan,
+                                index
+                            ) {
+
+                                const date =
+                                    scan.date
+                                        ? new Date(
+                                            scan.date
+                                        ).toLocaleString()
+                                        : "Unknown date";
+
+
+                                const score =
+                                    Number(
+                                        scan.score
+                                    );
+
+
+                                const scoreClass =
+                                    score >= 60
+                                        ? "tool-pass"
+                                        : "tool-warning";
+
+
+                                const issueCount =
+                                    typeof scan.issues === "number"
+                                        ? scan.issues
+                                        : "Not recorded";
+
+
+                                return `
+
+                                            <div class="history-item">
+
+                                                <strong>
+                                                    ${escapeHtml(
+                                    scan.website
+                                )}
+                                                </strong>
+
+
+                                                <p>
+
+                                                    <strong>
+                                                        Scan #${index + 1}
+                                                    </strong>
+
+                                                    —
+
+                                                    Security Score:
+
+                                                    <span
+                                                        class="${scoreClass}"
+                                                    >
+
+                                                        ${escapeHtml(
+                                    scan.score
+                                )}/100
+
+                                                    </span>
+
+                                                </p>
+
+
+                                                <span>
+
+                                                    Issues detected:
+                                                    ${escapeHtml(
+                                    issueCount
+                                )}
+
+                                                </span>
+
+
+                                                <br>
+
+
+                                                <small>
+
+                                                    ${escapeHtml(
+                                    date
+                                )}
+
+                                                </small>
+
+
+                                                <p>
+
+                                                    Open the main scanner
+                                                    and run a new scan if
+                                                    you need a current
+                                                    assessment. Historical
+                                                    results are not
+                                                    automatically refreshed.
+
+                                                </p>
+
+                                            </div>
+
+                                        `;
+
+                            }
+                        )
+                        .join("")
+                    }
+
+                    </div>
+
+                `;
+            }
+
+
+            showToolPanel(
+
+                "Scan History",
+
+                "Review detailed information about website scans saved in your browser.",
+
+                content
+
+            );
+        }
+
+
+        /* =====================================================
+           SECURITY REPORT
+        ===================================================== */
+
+        function generateSecurityReport() {
+
+            let savedScan =
+                null;
+
+
+            try {
+
+                const raw =
+                    localStorage.getItem(
+                        "lastScan"
+                    );
+
+
+                savedScan =
+                    raw
+                        ? JSON.parse(raw)
+                        : null;
+
+            } catch (error) {
+
+                savedScan =
+                    null;
+            }
+
+
+            if (!savedScan) {
+
+                showToolPanel(
+
+                    "Security Report",
+
+                    "A report can be generated after at least one website scan.",
+
+                    `
+
+                        <div class="tool-result">
+
+                            <strong class="tool-warning">
+                                No Scan Available
+                            </strong>
+
+                            <p>
+
+                                Run the main Scan Website feature
+                                first. After the scan completes,
+                                the Security Report button can
+                                generate a detailed printable report.
+
+                            </p>
+
+                        </div>
+
+                    `
+
+                );
+
+                return;
+            }
+
+
+            const reportWindow =
+                window.open(
+                    "",
+                    "_blank"
+                );
+
+
+            if (!reportWindow) {
+
+                showToolPanel(
+
+                    "Security Report",
+
+                    "Your browser blocked the report window.",
+
+                    `
+
+                        <div class="tool-result">
+
+                            <strong class="tool-warning">
+                                Popup Blocked
+                            </strong>
+
+                            <p>
+
+                                Allow popups for this page and
+                                try generating the report again.
+
+                            </p>
+
+                        </div>
+
+                    `
+
+                );
+
+                return;
+            }
+
+
+            const checks =
+                Array.isArray(
+                    savedScan.checks
+                )
+                    ? savedScan.checks
+                    : [];
+
+
+            const recommendations =
+                Array.isArray(
+                    savedScan.recommendations
+                )
+                    ? savedScan.recommendations
+                    : [];
+
+
+            const checksHtml =
+                checks
+                    .map(
+                        function (check) {
+
+                            return `
+
+                                <div class="report-item">
+
+                                    <h3 class="${check.passed
+                                    ? "pass"
+                                    : "issue"
+                                }">
+
+                                        ${check.passed
+                                    ? "PASS"
+                                    : "ISSUE"
+                                }
+
+                                        —
+                                        ${escapeHtml(
+                                    check.title
+                                )}
+
+                                    </h3>
+
+
+                                    <p>
+
+                                        ${escapeHtml(
+                                    check.description
+                                )}
+
+                                    </p>
+
+                                </div>
+
+                            `;
+
+                        }
+                    )
+                    .join("");
+
+
+            const recommendationsHtml =
+                recommendations
+                    .map(
+                        function (item) {
+
+                            return `
+
+                                <li>
+                                    ${escapeHtml(
+                                item
+                            )}
+                                </li>
+
+                            `;
+
+                        }
+                    )
+                    .join("");
+
+
+            const reportHtml = `
+
+                <!DOCTYPE html>
+
+                <html lang="en">
+
+                <head>
+
+                    <meta charset="UTF-8">
+
+                    <meta
+                        name="viewport"
+                        content="width=device-width, initial-scale=1.0"
+                    >
+
+                    <title>
+                        Security Report
+                    </title>
+
+
+                    <style>
+
+                        body {
+
+                            font-family:
+                                Arial,
+                                Helvetica,
+                                sans-serif;
+
+                            background:
+                                #090c11;
+
+                            color:
+                                #ffffff;
+
+                            padding:
+                                35px;
+
+                            line-height:
+                                1.7;
+                        }
+
+
+                        .report {
+
+                            max-width:
+                                950px;
+
+                            margin:
+                                auto;
+
+                            background:
+                                #0d1512;
+
+                            padding:
+                                35px;
+
+                            border-radius:
+                                14px;
+
+                            border:
+                                1px solid
+                                rgba(
+                                    45,
+                                    215,
+                                    196,
+                                    0.14
+                                );
+                        }
+
+
+                        h1 {
+
+                            margin-bottom:
+                                8px;
+                        }
+
+
+                        h2 {
+
+                            margin-top:
+                                30px;
+
+                            margin-bottom:
+                                12px;
+                        }
+
+
+                        .meta {
+
+                            color:
+                                #94a3b8;
+                        }
+
+
+                        .score {
+
+                            font-size:
+                                42px;
+
+                            font-weight:
+                                700;
+
+                            margin:
+                                20px 0;
+
+                            color:
+                                #2dd7c4;
+                        }
+
+
+                        .report-item {
+
+                            padding:
+                                18px 0;
+
+                            border-bottom:
+                                1px solid
+                                rgba(
+                                    45,
+                                    215,
+                                    196,
+                                    0.12
+                                );
+                        }
+
+
+                        .report-item h3 {
+
+                            margin-bottom:
+                                8px;
+                        }
+
+
+                        .report-item p {
+
+                            color:
+                                #cbd5e1;
+                        }
+
+
+                        .pass {
+
+                            color:
+                                #4ade80;
+                        }
+
+
+                        .issue {
+
+                            color:
+                                #f87171;
+                        }
+
+
+                        li {
+
+                            margin:
+                                10px 0;
+
+                            color:
+                                #cbd5e1;
+                        }
+
+
+                        button {
+
+                            margin-top:
+                                25px;
+
+                            padding:
+                                11px 18px;
+
+                            border:
+                                none;
+
+                            border-radius:
+                                8px;
+
+                            cursor:
+                                pointer;
+
+                            background:
+                                #16a394;
+
+                            color:
+                                #ffffff;
+
+                            font-weight:
+                                700;
+                        }
+
+
+                        @media print {
+
+                            button {
+                                display:
+                                    none;
+                            }
+
+                            body {
+
+                                background:
+                                    white;
+
+                                color:
+                                    black;
+                            }
+
+                            .report {
+
+                                background:
+                                    white;
+
+                                color:
+                                    black;
+                            }
+
+                        }
+
+                    </style>
+
+                </head>
+
+
+                <body>
+
+                    <div class="report">
+
+                        <h1>
+                            Cybersecurity Threat Detection &amp;
+                            Analysis System
+                        </h1>
+
+
+                        <div class="meta">
+
+                            Detailed Security Assessment Report
+
+                        </div>
+
+
+                        <h2>
+                            Website
+                        </h2>
+
+
+                        <p>
+
+                            ${escapeHtml(
+                savedScan.website
+            )}
+
+                        </p>
+
+
+                        <div class="score">
+
+                            ${escapeHtml(
+                savedScan.score
+            )}/100
+
+                        </div>
+
+
+                        <h2>
+                            Security Checks
+                        </h2>
+
+
+                        ${checksHtml}
+
+
+                        <h2>
+                            Security Recommendations
+                        </h2>
+
+
+                        <ul>
+
+                            ${recommendationsHtml}
+
+                        </ul>
+
+
+                        <h2>
+                            Report Explanation
+                        </h2>
+
+
+                        <p class="meta">
+
+                            This report contains the results produced
+                            by the frontend security scanner at the
+                            time of the scan. It is intended for basic
+                            educational and demonstration purposes and
+                            should not be treated as a complete
+                            penetration test or vulnerability assessment.
+
+                        </p>
+
+
+                        <p class="meta">
+
+                            Generated:
+                            ${escapeHtml(
+                new Date().toLocaleString()
+            )}
+
+                        </p>
+
+
+                        <button
+                            onclick="window.print()"
+                        >
+                            Print / Save as PDF
+                        </button>
+
+                    </div>
+
+                </body>
+
+                </html>
+
+            `;
+
+
+            reportWindow.document.open();
+
+            reportWindow.document.write(
+                reportHtml
+            );
+
+            reportWindow.document.close();
+        }
+
+
+        /* =====================================================
+           SCAN BUTTON
+        ===================================================== */
+
+        scanButton.addEventListener(
+            "click",
+            scanWebsite
+        );
+
+
+        /* =====================================================
+           ENTER KEY
+        ===================================================== */
+
+        websiteUrl.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key === "Enter"
+                ) {
+
+                    scanWebsite();
+                }
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>

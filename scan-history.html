@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Scan History</title>
+
+    <link rel="stylesheet" href="css/page.css">
+
+</head>
+
+<body>
+
+    <div class="dashboard">
+
+        <!-- SIDEBAR -->
+
+        <aside class="sidebar">
+
+            <div class="brand">
+
+                <div class="brand-icon">
+                    🛡️
+                </div>
+
+                <div>
+                    <h2>Web Security</h2>
+                    <span>Analyzer</span>
+                </div>
+
+            </div>
+
+
+            <nav>
+
+                <a href="dashboard.html">
+                    📊 Dashboard
+                </a>
+
+                <a href="scanner.html">
+                    🔍 Security Scanner
+                </a>
+
+                <a href="chatbot.html">
+                    🤖 Security Assistant
+                </a>
+
+                <a href="ip-awareness.html">
+                    🌐 IP Awareness
+                </a>
+
+                <a href="scan-history.html" class="active">
+                    📋 Scan History
+                </a>
+
+            </nav>
+
+
+            <button id="logoutButton" class="logout">
+
+                🚪 Logout
+
+            </button>
+
+        </aside>
+
+
+        <!-- MAIN -->
+
+        <main class="main">
+
+            <div class="history-header">
+
+                <span class="page-label">
+                    SCAN HISTORY
+                </span>
+
+                <h1>
+                    Scan History 📋
+                </h1>
+
+                <p>
+                    View your previous website security scans.
+                </p>
+
+            </div>
+
+
+            <!-- HISTORY -->
+
+            <div class="history-box">
+
+                <div class="history-title">
+
+                    <h2>
+                        Previous Scans
+                    </h2>
+
+                    <button onclick="clearHistory()" class="clear-button">
+
+                        Clear History
+
+                    </button>
+
+                </div>
+
+
+                <div id="historyList">
+
+                    <!-- Scan history will appear here -->
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+
+    <script src="css/js/scan-history.js"></script>
+
+</body>
+
+</html>

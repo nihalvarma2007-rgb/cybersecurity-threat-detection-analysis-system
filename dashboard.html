@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cybersecurity Threat Detection & Analysis System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* =====================================================
+       TOKENS
+    ===================================================== */
+        :root {
+            --bg: #090c11;
+            --panel: #10141b;
+            --panel-alt: #141922;
+            --border: #212733;
+            --border-soft: #1a1f29;
+            --text: #eef1f5;
+            --text-muted: #838ea0;
+            --text-dim: #5b6577;
+            --accent: #2dd7c4;
+            --accent-dim: #1a3d3a;
+            --good: #34d399;
+            --warn: #f2a93c;
+            --bad: #f2455c;
+            --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+            --sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--sans);
+            background: var(--bg);
+            background-image:
+                radial-gradient(ellipse 900px 500px at 12% -8%, rgba(45, 215, 196, 0.06), transparent 60%),
+                repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.012) 0px, rgba(255, 255, 255, 0.012) 1px, transparent 1px, transparent 3px);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        ::selection {
+            background: var(--accent-dim);
+            color: var(--accent);
+        }
+
+        a {
+            color: inherit;
+        }
+
+        /* =====================================================
+       TOP NAVIGATION
+    ===================================================== */
+        .top-navbar {
+            width: 100%;
+            height: 68px;
+            background: rgba(10, 13, 18, 0.92);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-soft);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--mono);
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            color: var(--text);
+            white-space: nowrap;
+        }
+
+        .brand-mark {
+            width: 9px;
+            height: 9px;
+            border-radius: 2px;
+            background: var(--accent);
+            box-shadow: 0 0 10px rgba(45, 215, 196, 0.7);
+            flex-shrink: 0;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 13.5px;
+            font-weight: 500;
+            letter-spacing: 0.01em;
+            padding: 8px 14px;
+            border-radius: 7px;
+            border: 1px solid transparent;
+            transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--text);
+            background: var(--panel-alt);
+        }
+
+        .nav-links a.active {
+            color: var(--accent);
+            background: var(--accent-dim);
+            border-color: rgba(45, 215, 196, 0.25);
+        }
+
+        .nav-status {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--text-dim);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .pulse-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--good);
+            box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.6);
+            animation: pulse 2.4s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.55);
+            }
+
+            70% {
+                box-shadow: 0 0 0 7px rgba(52, 211, 153, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(52, 211, 153, 0);
+            }
+        }
+
+        /* =====================================================
+       MAIN
+    ===================================================== */
+        .main-container {
+            width: 100%;
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 48px 32px 80px;
+        }
+
+        /* =====================================================
+       HEADER
+    ===================================================== */
+        .page-header {
+            margin-bottom: 36px;
+        }
+
+        .eyebrow {
+            font-family: var(--mono);
+            font-size: 11.5px;
+            color: var(--accent);
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .eyebrow::before {
+            content: "";
+            width: 20px;
+            height: 1px;
+            background: var(--accent);
+            opacity: 0.6;
+        }
+
+        .page-header h1 {
+            font-size: 34px;
+            font-weight: 600;
+            line-height: 1.2;
+            margin-bottom: 10px;
+            color: var(--text);
+            letter-spacing: -0.01em;
+        }
+
+        .page-header p {
+            font-size: 15px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            max-width: 560px;
+        }
+
+        /* =====================================================
+       WELCOME + USER
+    ===================================================== */
+        .welcome-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            margin-bottom: 28px;
+            padding-bottom: 28px;
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        .welcome-text h2 {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text);
+        }
+
+        .welcome-text p {
+            color: var(--text-dim);
+            font-size: 13.5px;
+            font-family: var(--mono);
+        }
+
+        .user-card {
+            min-width: 226px;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--panel);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--accent-dim);
+            color: var(--accent);
+            font-family: var(--mono);
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+            border: 1px solid rgba(45, 215, 196, 0.25);
+        }
+
+        .user-details strong {
+            display: block;
+            color: var(--text);
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .user-details span {
+            color: var(--text-dim);
+            font-size: 12px;
+            font-family: var(--mono);
+        }
+
+        /* =====================================================
+       SECURITY SCORE CARD
+    ===================================================== */
+        .score-card {
+            width: 100%;
+            padding: 32px 36px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: linear-gradient(150deg, var(--panel), #0d1117);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 40px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .score-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+            background-size: 28px 28px;
+            mask-image: radial-gradient(ellipse 500px 300px at 0% 0%, black, transparent 70%);
+            pointer-events: none;
+        }
+
+        .score-information {
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+
+        .score-label {
+            color: var(--text-dim);
+            font-family: var(--mono);
+            font-size: 11.5px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .score-value {
+            font-family: var(--mono);
+            font-size: 52px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 14px;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .score-value span {
+            font-size: 22px;
+            color: var(--text-dim);
+            font-weight: 500;
+        }
+
+        .score-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            padding: 5px 12px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+        }
+
+        .score-status::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .status-none {
+            color: var(--text-dim);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .status-good {
+            color: var(--good);
+            background: rgba(52, 211, 153, 0.08);
+            border-color: rgba(52, 211, 153, 0.22);
+        }
+
+        .status-fair {
+            color: var(--warn);
+            background: rgba(242, 169, 60, 0.08);
+            border-color: rgba(242, 169, 60, 0.22);
+        }
+
+        .status-poor {
+            color: var(--bad);
+            background: rgba(242, 69, 92, 0.08);
+            border-color: rgba(242, 69, 92, 0.22);
+        }
+
+        .score-description {
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.6;
+            max-width: 380px;
+        }
+
+        /* =====================================================
+       SCORE DIAL (segmented meter — signature element)
+    ===================================================== */
+        .score-dial {
+            width: 168px;
+            height: 168px;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .score-dial svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .dial-track {
+            stroke: var(--border);
+        }
+
+        .dial-fill {
+            stroke: var(--accent);
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.6s ease;
+            filter: drop-shadow(0 0 6px rgba(45, 215, 196, 0.5));
+        }
+
+        .dial-center {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dial-center strong {
+            font-family: var(--mono);
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .dial-center span {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-top: 6px;
+            letter-spacing: 0.08em;
+        }
+
+        /* =====================================================
+       STATISTICS
+    ===================================================== */
+        .statistics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            padding: 20px 22px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--panel);
+            position: relative;
+        }
+
+        .stat-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            border-radius: 12px 12px 0 0;
+            background: var(--stat-color, var(--accent));
+            opacity: 0.7;
+        }
+
+        .stat-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 22px;
+        }
+
+        .stat-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            background: color-mix(in srgb, var(--stat-color, var(--accent)) 16%, transparent);
+            color: var(--stat-color, var(--accent));
+        }
+
+        .stat-tag {
+            font-family: var(--mono);
+            font-size: 10px;
+            color: var(--text-dim);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .stat-card p {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .stat-card h3 {
+            color: var(--text);
+            font-family: var(--mono);
+            font-size: 26px;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* =====================================================
+       SECTION
+    ===================================================== */
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            gap: 12px;
+        }
+
+        .section-title h2 {
+            color: var(--text);
+            font-size: 19px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .section-title p {
+            color: var(--text-dim);
+            font-size: 13px;
+        }
+
+        /* =====================================================
+       SECURITY TOOLS
+    ===================================================== */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .tool-card {
+            padding: 22px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--panel);
+            transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(45, 215, 196, 0.35);
+            background: var(--panel-alt);
+        }
+
+        .tool-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-bottom: 16px;
+            background: color-mix(in srgb, var(--tool-color, var(--accent)) 14%, transparent);
+            color: var(--tool-color, var(--accent));
+        }
+
+        .tool-card h3 {
+            color: var(--text);
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .tool-card p {
+            color: var(--text-muted);
+            font-size: 13.5px;
+            line-height: 1.6;
+            flex: 1;
+            margin-bottom: 16px;
+        }
+
+        .tool-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--accent);
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            font-family: var(--mono);
+        }
+
+        .tool-link:hover {
+            color: #6fe8db;
+        }
+
+        /* =====================================================
+       ACTIVITY
+    ===================================================== */
+        .activity-card {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--panel);
+            overflow: hidden;
+        }
+
+        .empty-state {
+            padding: 34px;
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 13.5px;
+            font-family: var(--mono);
+        }
+
+        .activity-row {
+            min-height: 72px;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        .activity-row:last-child {
+            border-bottom: none;
+        }
+
+        .activity-left {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            min-width: 0;
+        }
+
+        .activity-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 9px;
+            background: var(--accent-dim);
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+            border: 1px solid rgba(45, 215, 196, 0.2);
+        }
+
+        .activity-left strong {
+            display: block;
+            color: var(--text);
+            font-size: 13.5px;
+            font-weight: 600;
+            margin-bottom: 3px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .activity-left span {
+            color: var(--text-dim);
+            font-size: 12px;
+            font-family: var(--mono);
+        }
+
+        .activity-score {
+            color: var(--good);
+            font-weight: 700;
+            font-family: var(--mono);
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .activity-score.warning {
+            color: var(--warn);
+        }
+
+        /* =====================================================
+       LOGOUT
+    ===================================================== */
+        .logout-area {
+            margin-top: 26px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .logout-button {
+            padding: 10px 18px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-family: var(--sans);
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+        }
+
+        .logout-button:hover {
+            background: rgba(242, 69, 92, 0.08);
+            color: var(--bad);
+            border-color: rgba(242, 69, 92, 0.3);
+        }
+
+        /* =====================================================
+       RESPONSIVE
+    ===================================================== */
+        @media (max-width: 900px) {
+            .top-navbar {
+                padding: 0 20px;
+            }
+
+            .nav-status {
+                display: none;
+            }
+
+            .main-container {
+                padding: 38px 20px 60px;
+            }
+
+            .score-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .score-dial {
+                align-self: center;
+            }
+
+            .statistics-grid,
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .user-card {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .top-navbar {
+                height: auto;
+                min-height: 64px;
+                padding: 14px 16px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .nav-links {
+                width: 100%;
+                overflow-x: auto;
+                padding-bottom: 2px;
+                gap: 4px;
+            }
+
+            .main-container {
+                padding: 30px 16px 50px;
+            }
+
+            .page-header h1 {
+                font-size: 27px;
+            }
+
+            .score-card {
+                padding: 24px;
+            }
+
+            .score-value {
+                font-size: 42px;
+            }
+
+            .score-dial {
+                width: 140px;
+                height: 140px;
+            }
+
+            .dial-center strong {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="top-navbar">
+        <div class="brand">
+            <span class="brand-mark"></span>
+            Cybersecurity Threat Detection & Analysis System
+        </div>
+
+        <nav class="nav-links">
+            <a href="dashboard.html" class="active">Dashboard</a>
+            <a href="scanner.html">Scanner</a>
+            <a href="chatbot.html">AI Assistant</a>
+            <a href="ip-awareness.html">IP Awareness</a>
+        </nav>
+
+        <div class="nav-status">
+            <span class="pulse-dot"></span>
+            System Online
+        </div>
+    </header>
+
+    <main class="main-container">
+
+        <section class="page-header">
+            <div class="eyebrow">Security Overview</div>
+            <h1>Security Dashboard</h1>
+            <p>Monitor your website security posture and review your latest analysis results.</p>
+        </section>
+
+        <section class="welcome-row">
+            <div class="welcome-text">
+                <h2 id="welcomeMessage">Welcome back, Nihal Varma</h2>
+                <p id="welcomeSub">// session active — overview refreshed on load</p>
+            </div>
+
+            <div class="user-card">
+                <div class="user-avatar" id="userAvatar">NV</div>
+                <div class="user-details">
+                    <strong id="userName">Nihal Varma</strong>
+                    <span>Security Analyst</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="score-card">
+            <div class="score-information">
+                <p class="score-label">Overall Security Score</p>
+
+                <div class="score-value">
+                    <span id="mainScore">0</span><span>/100</span>
+                </div>
+
+                <div id="scoreStatus" class="score-status status-none">Not Scanned</div>
+
+                <p id="scoreDescription" class="score-description">
+                    Scan a website to generate your security score.
+                </p>
+            </div>
+
+            <div class="score-dial">
+                <svg viewBox="0 0 160 160">
+                    <circle class="dial-track" cx="80" cy="80" r="70" fill="none" stroke-width="10"></circle>
+                    <circle id="dialFill" class="dial-fill" cx="80" cy="80" r="70" fill="none" stroke-width="10"
+                        stroke-dasharray="439.8" stroke-dashoffset="439.8" transform="rotate(-90 80 80)"></circle>
+                </svg>
+                <div class="dial-center">
+                    <strong id="circleScore">0</strong>
+                    <span>/ 100</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="statistics-grid">
+            <div class="stat-card" style="--stat-color:#2dd7c4">
+                <div class="stat-top">
+                    <div class="stat-icon">🛡️</div>
+                    <span class="stat-tag">Scans</span>
+                </div>
+                <p>Websites Scanned</p>
+                <h3 id="websitesScanned">0</h3>
+            </div>
+
+            <div class="stat-card" style="--stat-color:#f2a93c">
+                <div class="stat-top">
+                    <div class="stat-icon">⚠️</div>
+                    <span class="stat-tag">Findings</span>
+                </div>
+                <p>Issues Found</p>
+                <h3 id="issuesFound">0</h3>
+            </div>
+
+            <div class="stat-card" style="--stat-color:#34d399">
+                <div class="stat-top">
+                    <div class="stat-icon">✓</div>
+                    <span class="stat-tag">Status</span>
+                </div>
+                <p>Security Status</p>
+                <h3 id="securityStatus">Not Scanned</h3>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-title">
+                <div>
+                    <h2>Security Tools</h2>
+                    <p>Analyze and improve your website security.</p>
+                </div>
+            </div>
+
+            <div class="tools-grid">
+                <div class="tool-card" style="--tool-color:#2dd7c4">
+                    <div class="tool-icon">🛡️</div>
+                    <h3>Security Scanner</h3>
+                    <p>Analyze a website for common security configuration issues.</p>
+                    <a href="scanner.html" class="tool-link">Start Scanner →</a>
+                </div>
+
+                <div class="tool-card" style="--tool-color:#a78bfa">
+                    <div class="tool-icon">🤖</div>
+                    <h3>AI Security Assistant</h3>
+                    <p>Ask questions about cybersecurity and understand security findings.</p>
+                    <a href="chatbot.html" class="tool-link">Ask AI →</a>
+                </div>
+
+                <div class="tool-card" style="--tool-color:#38bdf8">
+                    <div class="tool-icon">🌐</div>
+                    <h3>IP Tracking Awareness</h3>
+                    <p>Learn how IP addresses can reveal network and approximate location information.</p>
+                    <a href="ip-awareness.html" class="tool-link">Learn More →</a>
+                </div>
+                <div class="tool-card" style="--tool-color:#34d399">
+                    <div class="tool-icon">🔐</div>
+                    <h3>Hash Generator</h3>
+                    <p>Generate cryptographic hash values from text using secure hashing algorithms.</p>
+                    <a href="hash-generator.html" class="tool-link">Generate Hash →</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-title">
+                <div>
+                    <h2>Last Scan</h2>
+                    <p>Your latest security scan.</p>
+                </div>
+            </div>
+
+            <div class="activity-card" id="lastScanContainer">
+                <div class="empty-state">No website has been scanned yet.</div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-title">
+                <div>
+                    <h2>Recent Security Activity</h2>
+                    <p>Your latest security checks.</p>
+                </div>
+            </div>
+
+            <div class="activity-card" id="activityContainer">
+                <div class="empty-state">No security activity yet.</div>
+            </div>
+        </section>
+
+        <div class="logout-area">
+            <button type="button" class="logout-button" id="logoutButton">Logout</button>
+        </div>
+
+    </main>
+
+    <script>
+
+        const DEFAULT_NAME = "Nihal Varma";
+        const DIAL_CIRCUMFERENCE = 439.8; // 2 * PI * 70
+
+        /* =====================================================
+           CURRENT USER
+        ===================================================== */
+        function getCurrentUser() {
+            const savedUser = localStorage.getItem("webSecurityCurrentUser");
+            if (!savedUser) return null;
+            try {
+                return JSON.parse(savedUser);
+            } catch (error) {
+                console.error("Unable to read current user:", error);
+                return null;
+            }
+        }
+
+        function getInitials(name) {
+            const parts = name.trim().split(/\s+/).filter(Boolean);
+            if (parts.length === 0) return "?";
+            if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+            return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+        }
+
+        /* =====================================================
+           USER NAME
+        ===================================================== */
+        function displayUserName() {
+            const user = getCurrentUser();
+            const welcome = document.getElementById("welcomeMessage");
+            const userName = document.getElementById("userName");
+            const userAvatar = document.getElementById("userAvatar");
+
+            const name = (user && user.name && user.name.trim()) ? user.name.trim() : DEFAULT_NAME;
+
+            welcome.textContent = "Welcome back, " + name;
+            userName.textContent = name;
+            userAvatar.textContent = getInitials(name);
+        }
+
+        /* =====================================================
+           GET LAST SCAN
+        ===================================================== */
+        function getLastScan() {
+            const keys = [
+                "webSecurityLastScan",
+                "lastScan",
+                "lastScanResult",
+                "scanResult",
+                "securityScan",
+                "latestScan"
+            ];
+
+            for (const key of keys) {
+                const saved = localStorage.getItem(key);
+                if (!saved) continue;
+
+                try {
+                    const result = JSON.parse(saved);
+                    if (result && typeof result === "object") return result;
+                } catch (error) {
+                    console.log("Invalid scan data:", key);
+                }
+            }
+            return null;
+        }
+
+        function getNumber(value, fallback = 0) {
+            const number = Number(value);
+            return Number.isFinite(number) ? number : fallback;
+        }
+
+        function escapeHtml(value) {
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function setDial(score) {
+            const dial = document.getElementById("dialFill");
+            const offset = DIAL_CIRCUMFERENCE - (score / 100) * DIAL_CIRCUMFERENCE;
+            dial.style.strokeDashoffset = offset;
+
+            let color = "#2dd7c4";
+            if (score < 60) color = "#f2455c";
+            else if (score < 80) color = "#f2a93c";
+            else color = "#34d399";
+            dial.style.stroke = color;
+            dial.style.filter = `drop-shadow(0 0 6px ${color}80)`;
+        }
+
+        /* =====================================================
+           UPDATE DASHBOARD
+        ===================================================== */
+        function updateDashboard() {
+            const scan = getLastScan();
+
+            if (!scan) {
+                document.getElementById("mainScore").textContent = "0";
+                document.getElementById("circleScore").textContent = "0";
+                document.getElementById("websitesScanned").textContent = "0";
+                document.getElementById("issuesFound").textContent = "0";
+                document.getElementById("securityStatus").textContent = "Not Scanned";
+
+                const status = document.getElementById("scoreStatus");
+                status.textContent = "Not Scanned";
+                status.className = "score-status status-none";
+
+                document.getElementById("scoreDescription").textContent =
+                    "Scan a website to generate your security score.";
+
+                setDial(0);
+
+                document.getElementById("lastScanContainer").innerHTML =
+                    `<div class="empty-state">No website has been scanned yet.</div>`;
+
+                document.getElementById("activityContainer").innerHTML =
+                    `<div class="empty-state">No security activity yet.</div>`;
+
+                return;
+            }
+
+            let score = getNumber(scan.score ?? scan.securityScore ?? scan.security_score, 0);
+            score = Math.max(0, Math.min(100, score));
+
+            const website = scan.url ?? scan.website ?? scan.domain ?? scan.target ?? "Website";
+            const issues = getNumber(scan.issues ?? scan.issuesFound ?? scan.issueCount ?? scan.vulnerabilities, 0);
+            const passed = getNumber(scan.passed ?? scan.passedChecks, 0);
+            const warnings = getNumber(scan.warnings ?? scan.warningCount, 0);
+
+            document.getElementById("mainScore").textContent = score;
+            document.getElementById("circleScore").textContent = score;
+            setDial(score);
+
+            const statusElement = document.getElementById("scoreStatus");
+
+            if (score >= 80) {
+                statusElement.textContent = "Good Security";
+                statusElement.className = "score-status status-good";
+                document.getElementById("scoreDescription").textContent =
+                    "Your security configuration is generally good.";
+            } else if (score >= 60) {
+                statusElement.textContent = "Fair Security";
+                statusElement.className = "score-status status-fair";
+                document.getElementById("scoreDescription").textContent =
+                    "Your website has some security improvements that are recommended.";
+            } else {
+                statusElement.textContent = "Needs Improvement";
+                statusElement.className = "score-status status-poor";
+                document.getElementById("scoreDescription").textContent =
+                    "Several security improvements are recommended.";
+            }
+
+            document.getElementById("websitesScanned").textContent = "1";
+            document.getElementById("issuesFound").textContent = issues;
+
+            let securityStatus = "Good";
+            if (score < 60) securityStatus = "Poor";
+            else if (score < 80) securityStatus = "Fair";
+            document.getElementById("securityStatus").textContent = securityStatus;
+
+            document.getElementById("lastScanContainer").innerHTML = `
+                <div class="activity-row">
+                    <div class="activity-left">
+                        <div class="activity-icon">🌐</div>
+                        <div>
+                            <strong>${escapeHtml(website)}</strong>
+                            <span>Security scan completed</span>
+                        </div>
+                    </div>
+                    <div class="activity-score">${score}/100</div>
+                </div>
+            `;
+
+            document.getElementById("activityContainer").innerHTML = `
+                <div class="activity-row">
+                    <div class="activity-left">
+                        <div class="activity-icon">🌐</div>
+                        <div>
+                            <strong>${escapeHtml(website)}</strong>
+                            <span>Scan completed • ${passed} passed • ${warnings} warnings • ${issues} issues</span>
+                        </div>
+                    </div>
+                    <div class="activity-score ${score < 80 ? "warning" : ""}">${score}/100</div>
+                </div>
+            `;
+        }
+
+        /* =====================================================
+           LOGOUT
+        ===================================================== */
+        function logoutUser() {
+            const confirmed = window.confirm("Are you sure you want to logout?");
+            if (!confirmed) return;
+
+            localStorage.removeItem("webSecurityLoggedIn");
+            localStorage.removeItem("webSecurityCurrentUser");
+            localStorage.removeItem("isLoggedIn");
+            localStorage.removeItem("loggedIn");
+            localStorage.removeItem("authenticated");
+            localStorage.removeItem("auth");
+            localStorage.removeItem("currentUser");
+
+            try {
+                sessionStorage.clear();
+            } catch (error) {
+                console.log("Session storage clear skipped.");
+            }
+
+            window.location.href = "index.html";
+        }
+
+        /* =====================================================
+           PAGE LOAD
+        ===================================================== */
+        document.addEventListener("DOMContentLoaded", function () {
+            displayUserName();
+            updateDashboard();
+
+            const logoutButton = document.getElementById("logoutButton");
+            if (logoutButton) {
+                logoutButton.addEventListener("click", logoutUser);
+            }
+        });
+
+    </script>
+
+</body>
+
+</html>

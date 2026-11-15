@@ -1,0 +1,3146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Hashing & File Integrity Toolkit |
+        Cybersecurity Threat Detection & Analysis System
+    </title>
+
+    <!-- CryptoJS is used only for SHA-3 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+
+    <style>
+        /* =====================================================
+           RESET
+        ===================================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        /* =====================================================
+           BODY
+        ===================================================== */
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+
+            color: #e8f1f2;
+
+            min-height: 100vh;
+
+            overflow-x: hidden;
+
+            background:
+                radial-gradient(circle at 15% 20%,
+                    rgba(0, 255, 200, 0.10),
+                    transparent 30%),
+                radial-gradient(circle at 85% 70%,
+                    rgba(0, 140, 255, 0.08),
+                    transparent 30%),
+                linear-gradient(135deg,
+                    #020708 0%,
+                    #061211 45%,
+                    #020607 100%);
+
+            position: relative;
+        }
+
+
+        /* =====================================================
+           CYBER GRID
+        ===================================================== */
+
+        body::before {
+            content: "";
+
+            position: fixed;
+
+            inset: 0;
+
+            pointer-events: none;
+
+            background-image:
+                linear-gradient(rgba(45, 215, 196, 0.035) 1px,
+                    transparent 1px),
+                linear-gradient(90deg,
+                    rgba(45, 215, 196, 0.035) 1px,
+                    transparent 1px);
+
+            background-size: 50px 50px;
+
+            animation: gridMove 20s linear infinite;
+
+            z-index: 0;
+        }
+
+
+        @keyframes gridMove {
+
+            from {
+                background-position: 0 0;
+            }
+
+            to {
+                background-position: 50px 50px;
+            }
+        }
+
+
+        /* =====================================================
+           GLOW
+        ===================================================== */
+
+        .glow {
+            position: fixed;
+
+            width: 350px;
+            height: 350px;
+
+            border-radius: 50%;
+
+            background: rgba(45, 215, 196, 0.06);
+
+            filter: blur(70px);
+
+            pointer-events: none;
+
+            z-index: 0;
+        }
+
+
+        .glow.one {
+            top: -120px;
+            left: -100px;
+
+            animation: floatOne 8s ease-in-out infinite;
+        }
+
+
+        .glow.two {
+            right: -120px;
+            bottom: -100px;
+
+            background: rgba(0, 140, 255, 0.06);
+
+            animation: floatTwo 10s ease-in-out infinite;
+        }
+
+
+        @keyframes floatOne {
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+
+            50% {
+                transform: translate(80px, 60px);
+            }
+        }
+
+
+        @keyframes floatTwo {
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+
+            50% {
+                transform: translate(-70px, -50px);
+            }
+        }
+
+
+        /* =====================================================
+           NAVBAR
+        ===================================================== */
+
+        .navbar {
+            min-height: 70px;
+
+            width: 100%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 12px 35px;
+
+            background: rgba(3, 10, 11, 0.90);
+
+            border-bottom:
+                1px solid rgba(45, 215, 196, 0.15);
+
+            backdrop-filter: blur(12px);
+
+            position: relative;
+
+            z-index: 10;
+
+            gap: 20px;
+        }
+
+
+        .logo {
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            font-size: 15px;
+
+            font-weight: 600;
+
+            color: #f1f7f7;
+        }
+
+
+        .logo-icon {
+            width: 10px;
+            height: 10px;
+
+            flex-shrink: 0;
+
+            border-radius: 2px;
+
+            background: #2dd7c4;
+
+            box-shadow:
+                0 0 8px #2dd7c4,
+                0 0 18px rgba(45, 215, 196, 0.5);
+        }
+
+
+        .nav-links {
+            display: flex;
+
+            gap: 8px;
+
+            flex-wrap: wrap;
+
+            justify-content: flex-end;
+        }
+
+
+        .nav-links a {
+            text-decoration: none;
+
+            color: #87999d;
+
+            font-size: 13px;
+
+            padding: 9px 13px;
+
+            border-radius: 7px;
+
+            transition: 0.2s;
+        }
+
+
+        .nav-links a:hover {
+            color: #ffffff;
+
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+
+        .nav-links a.active {
+            color: #2dd7c4;
+
+            background:
+                rgba(45, 215, 196, 0.09);
+
+            border:
+                1px solid rgba(45, 215, 196, 0.20);
+        }
+
+
+        /* =====================================================
+           MAIN
+        ===================================================== */
+
+        .container {
+            position: relative;
+
+            z-index: 2;
+
+            width: 100%;
+
+            max-width: 1100px;
+
+            margin: auto;
+
+            padding: 55px 25px 80px;
+        }
+
+
+        /* =====================================================
+           HEADER
+        ===================================================== */
+
+        .header {
+            text-align: center;
+
+            margin-bottom: 35px;
+        }
+
+
+        .badge {
+            display: inline-block;
+
+            padding: 7px 13px;
+
+            border-radius: 20px;
+
+            border:
+                1px solid rgba(45, 215, 196, 0.25);
+
+            background:
+                rgba(45, 215, 196, 0.06);
+
+            color: #2dd7c4;
+
+            font-size: 11px;
+
+            font-weight: 600;
+
+            letter-spacing: 1.5px;
+
+            margin-bottom: 18px;
+        }
+
+
+        .header h1 {
+            font-size: 36px;
+
+            margin-bottom: 12px;
+
+            color: #f3f8f8;
+
+            text-shadow:
+                0 0 25px rgba(45, 215, 196, 0.15);
+        }
+
+
+        .header p {
+            max-width: 750px;
+
+            margin: auto;
+
+            color: #91a3a7;
+
+            font-size: 15px;
+
+            line-height: 1.7;
+        }
+
+
+        /* =====================================================
+           TABS
+        ===================================================== */
+
+        .tabs {
+            display: flex;
+
+            gap: 8px;
+
+            margin-bottom: 25px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .tab-button {
+            padding: 11px 16px;
+
+            border-radius: 8px;
+
+            border:
+                1px solid #263a3c;
+
+            background:
+                rgba(6, 15, 16, 0.8);
+
+            color: #89999c;
+
+            cursor: pointer;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            transition: 0.2s;
+        }
+
+
+        .tab-button:hover {
+            color: #ffffff;
+
+            border-color:
+                rgba(45, 215, 196, 0.35);
+        }
+
+
+        .tab-button.active {
+            color: #2dd7c4;
+
+            background:
+                rgba(45, 215, 196, 0.08);
+
+            border-color:
+                rgba(45, 215, 196, 0.35);
+        }
+
+
+        /* =====================================================
+           CARD
+        ===================================================== */
+
+        .card {
+            background:
+                linear-gradient(145deg,
+                    rgba(10, 23, 23, 0.94),
+                    rgba(4, 12, 13, 0.96));
+
+            border:
+                1px solid rgba(45, 215, 196, 0.17);
+
+            border-radius: 16px;
+
+            padding: 30px;
+
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.40),
+                inset 0 1px 0 rgba(255, 255, 255, 0.02);
+
+            backdrop-filter: blur(15px);
+
+            margin-bottom: 25px;
+        }
+
+
+        .card h2 {
+            font-size: 19px;
+
+            margin-bottom: 8px;
+        }
+
+
+        .card-description {
+            color: #829497;
+
+            font-size: 13px;
+
+            line-height: 1.6;
+
+            margin-bottom: 22px;
+        }
+
+
+        /* =====================================================
+           LABEL
+        ===================================================== */
+
+        .label {
+            display: block;
+
+            margin-bottom: 9px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            color: #edf5f5;
+        }
+
+
+        /* =====================================================
+           TEXTAREA
+        ===================================================== */
+
+        textarea {
+            width: 100%;
+
+            min-height: 140px;
+
+            resize: vertical;
+
+            padding: 16px;
+
+            border-radius: 10px;
+
+            border:
+                1px solid #223638;
+
+            background:
+                rgba(2, 8, 9, 0.85);
+
+            color: #dce9e9;
+
+            font-family:
+                "Courier New", monospace;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+
+            outline: none;
+
+            transition: 0.2s;
+        }
+
+
+        textarea::placeholder {
+            color: #53666a;
+        }
+
+
+        textarea:focus {
+            border-color:
+                rgba(45, 215, 196, 0.55);
+
+            box-shadow:
+                0 0 0 3px rgba(45, 215, 196, 0.07);
+        }
+
+
+        /* =====================================================
+           CONTROL ROW
+        ===================================================== */
+
+        .control-row {
+            display: grid;
+
+            grid-template-columns:
+                1fr auto auto;
+
+            gap: 12px;
+
+            margin-top: 18px;
+        }
+
+
+        select {
+            width: 100%;
+
+            padding: 13px 15px;
+
+            border-radius: 9px;
+
+            border:
+                1px solid #223638;
+
+            background: #071011;
+
+            color: #dce9e9;
+
+            outline: none;
+
+            font-size: 14px;
+
+            cursor: pointer;
+        }
+
+
+        button {
+            border: none;
+
+            border-radius: 9px;
+
+            padding: 13px 18px;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+
+        .primary-btn {
+            color: #03100e;
+
+            background: #2dd7c4;
+        }
+
+
+        .primary-btn:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 7px 25px rgba(45, 215, 196, 0.18);
+        }
+
+
+        .secondary-btn {
+            color: #9aa9ac;
+
+            background: transparent;
+
+            border:
+                1px solid #27383a;
+        }
+
+
+        .secondary-btn:hover {
+            color: #ffffff;
+
+            background:
+                rgba(255, 255, 255, 0.04);
+        }
+
+
+        /* =====================================================
+           OUTPUT
+        ===================================================== */
+
+        .output-header {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-top: 25px;
+
+            margin-bottom: 10px;
+        }
+
+
+        .output-header h3 {
+            font-size: 15px;
+        }
+
+
+        .hash-output {
+            min-height: 85px;
+
+            display: flex;
+
+            align-items: center;
+
+            padding: 17px;
+
+            border-radius: 10px;
+
+            background:
+                linear-gradient(135deg,
+                    rgba(1, 7, 8, 0.95),
+                    rgba(5, 14, 15, 0.95));
+
+            border:
+                1px solid #203235;
+
+            color: #35e0a0;
+
+            font-family:
+                "Courier New", monospace;
+
+            font-size: 13px;
+
+            line-height: 1.7;
+
+            word-break: break-all;
+        }
+
+
+        .placeholder {
+            color: #4d6064;
+        }
+
+
+        /* =====================================================
+           FILE BOX
+        ===================================================== */
+
+        .file-box {
+            border:
+                1px dashed rgba(45, 215, 196, 0.30);
+
+            background:
+                rgba(45, 215, 196, 0.025);
+
+            padding: 25px;
+
+            border-radius: 12px;
+
+            text-align: center;
+        }
+
+
+        .file-box input {
+            margin-top: 15px;
+
+            color: #9aa9ac;
+
+            width: 100%;
+        }
+
+
+        .file-name {
+            margin-top: 12px;
+
+            color: #2dd7c4;
+
+            font-size: 13px;
+
+            word-break: break-all;
+        }
+
+
+        /* =====================================================
+           COMPARE
+        ===================================================== */
+
+        .compare-grid {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 18px;
+        }
+
+
+        .comparison-result {
+            margin-top: 20px;
+
+            padding: 17px;
+
+            border-radius: 10px;
+
+            border:
+                1px solid #203235;
+
+            background:
+                rgba(2, 8, 9, 0.8);
+
+            text-align: center;
+
+            font-size: 15px;
+
+            font-weight: 600;
+        }
+
+
+        .match {
+            color: #35e0a0;
+
+            border-color:
+                rgba(53, 224, 160, 0.25);
+        }
+
+
+        .no-match {
+            color: #f06a78;
+
+            border-color:
+                rgba(240, 106, 120, 0.25);
+        }
+
+
+        /* =====================================================
+           PASSWORD SECURITY
+        ===================================================== */
+
+        .password-strength {
+            margin-top: 15px;
+
+            padding: 15px;
+
+            border-radius: 10px;
+
+            background:
+                rgba(45, 215, 196, 0.035);
+
+            border:
+                1px solid rgba(45, 215, 196, 0.12);
+
+            color: #819397;
+
+            font-size: 13px;
+
+            line-height: 1.7;
+        }
+
+
+        .security-note {
+            margin-top: 18px;
+
+            padding: 16px;
+
+            border-left:
+                3px solid #2dd7c4;
+
+            background:
+                rgba(45, 215, 196, 0.04);
+
+            color: #819397;
+
+            font-size: 13px;
+
+            line-height: 1.7;
+        }
+
+
+        /* =====================================================
+           HISTORY
+        ===================================================== */
+
+        .history-list {
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 10px;
+
+            max-height: 400px;
+
+            overflow-y: auto;
+        }
+
+
+        .history-item {
+            padding: 14px;
+
+            border-radius: 9px;
+
+            background:
+                rgba(2, 8, 9, 0.75);
+
+            border:
+                1px solid #1d3032;
+        }
+
+
+        .history-top {
+            display: flex;
+
+            justify-content: space-between;
+
+            gap: 10px;
+
+            margin-bottom: 8px;
+        }
+
+
+        .history-algorithm {
+            color: #2dd7c4;
+
+            font-size: 12px;
+
+            font-weight: 700;
+        }
+
+
+        .history-date {
+            color: #586a6d;
+
+            font-size: 11px;
+        }
+
+
+        .history-input {
+            color: #9aa9ac;
+
+            font-size: 12px;
+
+            margin-bottom: 7px;
+        }
+
+
+        .history-hash {
+            color: #35e0a0;
+
+            font-family:
+                "Courier New", monospace;
+
+            font-size: 11px;
+
+            word-break: break-all;
+        }
+
+
+        .empty-history {
+            color: #586a6d;
+
+            text-align: center;
+
+            padding: 30px;
+        }
+
+
+        /* =====================================================
+           STATUS
+        ===================================================== */
+
+        .status {
+            margin-top: 15px;
+
+            padding: 12px 15px;
+
+            border-radius: 8px;
+
+            font-size: 13px;
+
+            display: none;
+        }
+
+
+        .status.success {
+            display: block;
+
+            color: #35e0a0;
+
+            background:
+                rgba(53, 224, 160, 0.06);
+
+            border:
+                1px solid rgba(53, 224, 160, 0.15);
+        }
+
+
+        .status.error {
+            display: block;
+
+            color: #f06a78;
+
+            background:
+                rgba(240, 106, 120, 0.06);
+
+            border:
+                1px solid rgba(240, 106, 120, 0.15);
+        }
+
+
+        /* =====================================================
+           BACK
+        ===================================================== */
+
+        .back {
+            display: inline-block;
+
+            margin-top: 5px;
+
+            color: #2dd7c4;
+
+            text-decoration: none;
+
+            font-size: 13px;
+        }
+
+
+        .back:hover {
+            color: #6eeadd;
+        }
+
+
+        /* =====================================================
+           FOOTER
+        ===================================================== */
+
+        .footer {
+            text-align: center;
+
+            margin-top: 30px;
+
+            color: #526467;
+
+            font-size: 11px;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 750px) {
+
+            .navbar {
+                height: auto;
+
+                padding: 15px 18px;
+
+                flex-direction: column;
+
+                align-items: flex-start;
+            }
+
+
+            .container {
+                padding:
+                    40px 16px 60px;
+            }
+
+
+            .header h1 {
+                font-size: 29px;
+            }
+
+
+            .card {
+                padding: 22px;
+            }
+
+
+            .control-row {
+                grid-template-columns: 1fr;
+            }
+
+
+            .compare-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+    </style>
+
+</head>
+
+
+<body>
+
+    <div class="glow one"></div>
+    <div class="glow two"></div>
+
+
+    <!-- =====================================================
+         NAVBAR
+    ===================================================== -->
+
+    <header class="navbar">
+
+        <div class="logo">
+
+            <span class="logo-icon"></span>
+
+            Cybersecurity Threat Detection & Analysis System
+
+        </div>
+
+
+        <nav class="nav-links">
+
+            <a href="dashboard.html">
+                Dashboard
+            </a>
+
+            <a href="scanner.html">
+                Scanner
+            </a>
+
+            <a href="chatbot.html">
+                AI Assistant
+            </a>
+
+            <a href="ip-awareness.html">
+                IP Awareness
+            </a>
+
+            <a href="hash-generator.html" class="active">
+                Hashing
+            </a>
+
+        </nav>
+
+    </header>
+
+
+    <!-- =====================================================
+         MAIN
+    ===================================================== -->
+
+    <main class="container">
+
+
+        <section class="header">
+
+            <div class="badge">
+                CRYPTOGRAPHIC SECURITY TOOLKIT
+            </div>
+
+            <h1>
+                🔐 Hashing & File Integrity Toolkit
+            </h1>
+
+            <p>
+                Generate secure cryptographic hashes,
+                analyze files, compare hash values,
+                verify file integrity and demonstrate
+                password key derivation.
+            </p>
+
+        </section>
+
+
+        <!-- =================================================
+             TABS
+        ================================================== -->
+
+        <div class="tabs">
+
+            <button class="tab-button active" data-tab="textTab">
+                🔐 Text Hash
+            </button>
+
+            <button class="tab-button" data-tab="fileTab">
+                📁 File Hash
+            </button>
+
+            <button class="tab-button" data-tab="compareTab">
+                🔍 Compare
+            </button>
+
+            <button class="tab-button" data-tab="verifyTab">
+                ✅ Verify File
+            </button>
+
+            <button class="tab-button" data-tab="passwordTab">
+                🔑 Password Security
+            </button>
+
+            <button class="tab-button" data-tab="historyTab">
+                📜 History
+            </button>
+
+        </div>
+
+
+        <!-- =================================================
+             TEXT HASH
+        ================================================== -->
+
+        <section class="card tab-content" id="textTab">
+
+            <h2>
+                🔐 Text Hash Generator
+            </h2>
+
+            <p class="card-description">
+                Generate a cryptographic hash from text using
+                modern SHA-2 and SHA-3 algorithms.
+            </p>
+
+
+            <label class="label" for="textInput">
+                Enter Text
+            </label>
+
+
+            <textarea id="textInput" placeholder="Enter text that you want to hash..."></textarea>
+
+
+            <div class="control-row">
+
+                <select id="textAlgorithm">
+
+                    <option value="SHA-256">
+                        SHA-256
+                    </option>
+
+                    <option value="SHA-384">
+                        SHA-384
+                    </option>
+
+                    <option value="SHA-512">
+                        SHA-512
+                    </option>
+
+                    <option value="SHA3-256">
+                        SHA3-256
+                    </option>
+
+                    <option value="SHA3-384">
+                        SHA3-384
+                    </option>
+
+                    <option value="SHA3-512">
+                        SHA3-512
+                    </option>
+
+                </select>
+
+
+                <button class="primary-btn" id="generateTextHash">
+                    Generate Hash
+                </button>
+
+
+                <button class="secondary-btn" id="clearText">
+                    Clear
+                </button>
+
+            </div>
+
+
+            <div class="output-header">
+
+                <h3>
+                    Generated Hash
+                </h3>
+
+                <button class="secondary-btn" id="copyTextHash">
+                    Copy Hash
+                </button>
+
+            </div>
+
+
+            <div class="hash-output" id="textHashOutput">
+
+                <span class="placeholder">
+                    Your generated hash will appear here...
+                </span>
+
+            </div>
+
+
+            <button class="secondary-btn" id="downloadTextHash" style="margin-top:12px;">
+                💾 Download Hash
+            </button>
+
+
+            <div class="status" id="textStatus"></div>
+
+        </section>
+
+
+        <!-- =================================================
+             FILE HASH
+        ================================================== -->
+
+        <section class="card tab-content" id="fileTab" style="display:none;">
+
+            <h2>
+                📁 File Hash Generator
+            </h2>
+
+            <p class="card-description">
+                Upload a file and calculate its cryptographic
+                hash locally in your browser.
+            </p>
+
+
+            <div class="file-box">
+
+                <div style="font-size:35px;">
+                    📁
+                </div>
+
+                <p style="margin-top:10px;color:#9aa9ac;">
+                    Select a file to calculate its hash
+                </p>
+
+
+                <input type="file" id="fileInput">
+
+
+                <div class="file-name" id="fileName">
+                    No file selected
+                </div>
+
+            </div>
+
+
+            <div class="control-row">
+
+                <select id="fileAlgorithm">
+
+                    <option value="SHA-256">
+                        SHA-256
+                    </option>
+
+                    <option value="SHA-384">
+                        SHA-384
+                    </option>
+
+                    <option value="SHA-512">
+                        SHA-512
+                    </option>
+
+                </select>
+
+
+                <button class="primary-btn" id="generateFileHash">
+                    Generate File Hash
+                </button>
+
+
+                <button class="secondary-btn" id="clearFile">
+                    Clear
+                </button>
+
+            </div>
+
+
+            <div class="output-header">
+
+                <h3>
+                    File Hash
+                </h3>
+
+                <button class="secondary-btn" id="copyFileHash">
+                    Copy Hash
+                </button>
+
+            </div>
+
+
+            <div class="hash-output" id="fileHashOutput">
+
+                <span class="placeholder">
+                    File hash will appear here...
+                </span>
+
+            </div>
+
+
+            <div class="status" id="fileStatus"></div>
+
+        </section>
+
+
+        <!-- =================================================
+             COMPARE
+        ================================================== -->
+
+        <section class="card tab-content" id="compareTab" style="display:none;">
+
+            <h2>
+                🔍 Hash Comparison
+            </h2>
+
+            <p class="card-description">
+                Compare two hash values to determine whether
+                they are identical.
+            </p>
+
+
+            <div class="compare-grid">
+
+                <div>
+
+                    <label class="label">
+                        Hash 1
+                    </label>
+
+                    <textarea id="hashOne" placeholder="Paste the first hash here..."></textarea>
+
+                </div>
+
+
+                <div>
+
+                    <label class="label">
+                        Hash 2
+                    </label>
+
+                    <textarea id="hashTwo" placeholder="Paste the second hash here..."></textarea>
+
+                </div>
+
+            </div>
+
+
+            <button class="primary-btn" id="compareButton" style="margin-top:18px;">
+                Compare Hashes
+            </button>
+
+
+            <div class="comparison-result" id="comparisonResult">
+                Enter two hashes and compare them.
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             VERIFY FILE
+        ================================================== -->
+
+        <section class="card tab-content" id="verifyTab" style="display:none;">
+
+            <h2>
+                ✅ File Integrity Verification
+            </h2>
+
+            <p class="card-description">
+                Upload a file and compare its generated hash
+                with an expected hash to check whether the
+                file content has changed.
+            </p>
+
+
+            <div class="file-box">
+
+                <div style="font-size:35px;">
+                    🛡️
+                </div>
+
+                <p style="margin-top:10px;color:#9aa9ac;">
+                    Select the file you want to verify
+                </p>
+
+
+                <input type="file" id="verifyFile">
+
+
+                <div class="file-name" id="verifyFileName">
+                    No file selected
+                </div>
+
+            </div>
+
+
+            <label class="label" for="expectedHash" style="margin-top:22px;">
+                Expected Hash
+            </label>
+
+
+            <textarea id="expectedHash" style="min-height:100px;"
+                placeholder="Paste the original / expected hash here..."></textarea>
+
+
+            <div class="control-row">
+
+                <select id="verifyAlgorithm">
+
+                    <option value="SHA-256">
+                        SHA-256
+                    </option>
+
+                    <option value="SHA-384">
+                        SHA-384
+                    </option>
+
+                    <option value="SHA-512">
+                        SHA-512
+                    </option>
+
+                </select>
+
+
+                <button class="primary-btn" id="verifyButton">
+                    Verify File
+                </button>
+
+
+                <button class="secondary-btn" id="clearVerify">
+                    Clear
+                </button>
+
+            </div>
+
+
+            <div class="comparison-result" id="verificationResult">
+                Verification result will appear here.
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             PASSWORD SECURITY
+        ================================================== -->
+
+        <section class="card tab-content" id="passwordTab" style="display:none;">
+
+            <h2>
+                🔑 Password Security
+            </h2>
+
+            <p class="card-description">
+                Demonstrate password key derivation using
+                PBKDF2 with SHA-256. A random salt is generated
+                for every operation.
+            </p>
+
+
+            <label class="label" for="passwordInput">
+                Enter Password
+            </label>
+
+
+            <textarea id="passwordInput" style="min-height:100px;"
+                placeholder="Enter a password for demonstration..."></textarea>
+
+
+            <div class="control-row">
+
+                <select id="passwordIterations">
+
+                    <option value="100000">
+                        100,000 iterations
+                    </option>
+
+                    <option value="150000">
+                        150,000 iterations
+                    </option>
+
+                    <option value="200000">
+                        200,000 iterations
+                    </option>
+
+                </select>
+
+
+                <button class="primary-btn" id="derivePassword">
+                    Derive Key
+                </button>
+
+
+                <button class="secondary-btn" id="clearPassword">
+                    Clear
+                </button>
+
+            </div>
+
+
+            <div class="output-header">
+
+                <h3>
+                    Generated Salt
+                </h3>
+
+                <button class="secondary-btn" id="copySalt">
+                    Copy Salt
+                </button>
+
+            </div>
+
+
+            <div class="hash-output" id="saltOutput">
+
+                <span class="placeholder">
+                    Salt will appear here...
+                </span>
+
+            </div>
+
+
+            <div class="output-header">
+
+                <h3>
+                    PBKDF2 Derived Key
+                </h3>
+
+                <button class="secondary-btn" id="copyDerived">
+                    Copy Key
+                </button>
+
+            </div>
+
+
+            <div class="hash-output" id="derivedOutput">
+
+                <span class="placeholder">
+                    Derived key will appear here...
+                </span>
+
+            </div>
+
+
+            <div class="security-note">
+
+                <strong>Important:</strong>
+
+                This is a demonstration of password key
+                derivation. Production applications should
+                use an appropriate password-storage design
+                and established security libraries.
+
+                Plain SHA-256 should not be used as a password
+                storage method.
+
+            </div>
+
+
+            <div class="status" id="passwordStatus"></div>
+
+        </section>
+
+
+        <!-- =================================================
+             HISTORY
+        ================================================== -->
+
+        <section class="card tab-content" id="historyTab" style="display:none;">
+
+            <h2>
+                📜 Hash History
+            </h2>
+
+            <p class="card-description">
+                View hashes generated during previous sessions
+                on this browser.
+            </p>
+
+
+            <div class="history-list" id="historyList"></div>
+
+
+            <button class="secondary-btn" id="clearHistory" style="margin-top:15px;">
+                Clear History
+            </button>
+
+        </section>
+
+
+        <!-- =================================================
+             SECURITY INFORMATION
+        ================================================== -->
+
+        <section class="card">
+
+            <h2>
+                🛡️ Security Information
+            </h2>
+
+
+            <div class="security-note">
+
+                <strong>SHA-2:</strong>
+
+                SHA-256, SHA-384 and SHA-512 are widely used
+                modern cryptographic hash functions.
+
+                <br><br>
+
+                <strong>SHA-3:</strong>
+
+                SHA3-256, SHA3-384 and SHA3-512 are members
+                of the SHA-3 family and use a different
+                internal construction from SHA-2.
+
+                <br><br>
+
+                <strong>PBKDF2:</strong>
+
+                PBKDF2 is a password-based key derivation
+                function that deliberately performs many
+                computational iterations.
+
+                <br><br>
+
+                <strong>Hashing ≠ Encryption:</strong>
+
+                Hashing is designed as a one-way operation,
+                while encryption is designed to be reversible
+                with the appropriate key.
+
+            </div>
+
+        </section>
+
+
+        <a href="dashboard.html" class="back">
+            ← Back to Dashboard
+        </a>
+
+
+        <div class="footer">
+
+            Cybersecurity Threat Detection & Analysis System
+
+        </div>
+
+    </main>
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ===================================================== -->
+
+    <script>
+
+        /* =====================================================
+           HELPER FUNCTIONS
+        ===================================================== */
+
+
+        function bufferToHex(buffer) {
+
+            const bytes =
+                new Uint8Array(buffer);
+
+            return Array
+                .from(bytes)
+                .map(
+                    byte =>
+                        byte
+                            .toString(16)
+                            .padStart(2, "0")
+                )
+                .join("");
+
+        }
+
+
+        async function webCryptoHash(
+            data,
+            algorithm
+        ) {
+
+            const result =
+                await crypto.subtle.digest(
+                    algorithm,
+                    data
+                );
+
+            return bufferToHex(result);
+
+        }
+
+
+        function cryptoJSHash(
+            text,
+            algorithm
+        ) {
+
+            const wordArray =
+                CryptoJS.enc.Utf8.parse(text);
+
+
+            let result;
+
+
+            if (algorithm === "SHA3-256") {
+
+                result =
+                    CryptoJS.SHA3(
+                        wordArray,
+                        {
+                            outputLength: 256
+                        }
+                    );
+
+            }
+
+
+            else if (algorithm === "SHA3-384") {
+
+                result =
+                    CryptoJS.SHA3(
+                        wordArray,
+                        {
+                            outputLength: 384
+                        }
+                    );
+
+            }
+
+
+            else if (algorithm === "SHA3-512") {
+
+                result =
+                    CryptoJS.SHA3(
+                        wordArray,
+                        {
+                            outputLength: 512
+                        }
+                    );
+
+            }
+
+
+            return result.toString(
+                CryptoJS.enc.Hex
+            );
+
+        }
+
+
+        async function calculateTextHash(
+            text,
+            algorithm
+        ) {
+
+            if (
+                algorithm === "SHA3-256" ||
+                algorithm === "SHA3-384" ||
+                algorithm === "SHA3-512"
+            ) {
+
+                return cryptoJSHash(
+                    text,
+                    algorithm
+                );
+
+            }
+
+
+            const encoder =
+                new TextEncoder();
+
+
+            return await webCryptoHash(
+                encoder.encode(text),
+                algorithm
+            );
+
+        }
+
+
+        function showStatus(
+            element,
+            message,
+            type
+        ) {
+
+            element.textContent =
+                message;
+
+            element.className =
+                "status " + type;
+
+        }
+
+
+        function randomHex(length) {
+
+            const bytes =
+                new Uint8Array(length);
+
+            crypto.getRandomValues(bytes);
+
+
+            return Array
+                .from(bytes)
+                .map(
+                    byte =>
+                        byte
+                            .toString(16)
+                            .padStart(2, "0")
+                )
+                .join("");
+
+        }
+
+
+        /* =====================================================
+           TABS
+        ===================================================== */
+
+        const tabButtons =
+            document.querySelectorAll(
+                ".tab-button"
+            );
+
+
+        const tabContents =
+            document.querySelectorAll(
+                ".tab-content"
+            );
+
+
+        tabButtons.forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const target =
+                        button.dataset.tab;
+
+
+                    tabButtons.forEach(
+                        item =>
+                            item.classList.remove(
+                                "active"
+                            )
+                    );
+
+
+                    tabContents.forEach(
+                        item =>
+                            item.style.display =
+                            "none"
+                    );
+
+
+                    button.classList.add(
+                        "active"
+                    );
+
+
+                    document.getElementById(
+                        target
+                    ).style.display =
+                        "block";
+
+                }
+            );
+
+        });
+
+
+        /* =====================================================
+           HISTORY
+        ===================================================== */
+
+        const HISTORY_KEY =
+            "cyberguard_hash_history";
+
+
+        function getHistory() {
+
+            try {
+
+                return JSON.parse(
+                    localStorage.getItem(
+                        HISTORY_KEY
+                    )
+                ) || [];
+
+            }
+
+            catch {
+
+                return [];
+
+            }
+
+        }
+
+
+        function saveHistory(
+            type,
+            input,
+            algorithm,
+            hash
+        ) {
+
+            const history =
+                getHistory();
+
+
+            history.unshift({
+
+                type: type,
+
+                input: input,
+
+                algorithm: algorithm,
+
+                hash: hash,
+
+                date:
+                    new Date()
+                        .toLocaleString()
+
+            });
+
+
+            if (history.length > 20) {
+
+                history.length = 20;
+
+            }
+
+
+            localStorage.setItem(
+                HISTORY_KEY,
+                JSON.stringify(history)
+            );
+
+        }
+
+
+        function escapeHtml(value) {
+
+            return String(value)
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+
+        }
+
+
+        function renderHistory() {
+
+            const list =
+                document.getElementById(
+                    "historyList"
+                );
+
+
+            const history =
+                getHistory();
+
+
+            if (!history.length) {
+
+                list.innerHTML = `
+                    <div class="empty-history">
+                        No hash history available yet.
+                    </div>
+                `;
+
+                return;
+
+            }
+
+
+            list.innerHTML =
+                history.map(
+                    item => `
+
+                    <div class="history-item">
+
+                        <div class="history-top">
+
+                            <span class="history-algorithm">
+                                ${escapeHtml(item.algorithm)}
+                                ·
+                                ${escapeHtml(item.type)}
+                            </span>
+
+                            <span class="history-date">
+                                ${escapeHtml(item.date)}
+                            </span>
+
+                        </div>
+
+                        <div class="history-input">
+                            Input:
+                            ${escapeHtml(item.input)}
+                        </div>
+
+                        <div class="history-hash">
+                            ${escapeHtml(item.hash)}
+                        </div>
+
+                    </div>
+
+                `
+                ).join("");
+
+        }
+
+
+        /* =====================================================
+           TEXT HASH
+        ===================================================== */
+
+        let latestTextHash = "";
+
+
+        document
+            .getElementById(
+                "generateTextHash"
+            )
+            .addEventListener(
+                "click",
+                async () => {
+
+                    const input =
+                        document.getElementById(
+                            "textInput"
+                        );
+
+
+                    const algorithm =
+                        document.getElementById(
+                            "textAlgorithm"
+                        ).value;
+
+
+                    const output =
+                        document.getElementById(
+                            "textHashOutput"
+                        );
+
+
+                    const status =
+                        document.getElementById(
+                            "textStatus"
+                        );
+
+
+                    const text =
+                        input.value;
+
+
+                    if (!text.trim()) {
+
+                        showStatus(
+                            status,
+                            "Please enter some text first.",
+                            "error"
+                        );
+
+                        return;
+
+                    }
+
+
+                    try {
+
+                        const hash =
+                            await calculateTextHash(
+                                text,
+                                algorithm
+                            );
+
+
+                        latestTextHash =
+                            hash;
+
+
+                        output.textContent =
+                            hash;
+
+
+                        saveHistory(
+                            "Text",
+                            text,
+                            algorithm,
+                            hash
+                        );
+
+
+                        showStatus(
+                            status,
+                            algorithm +
+                            " hash generated successfully.",
+                            "success"
+                        );
+
+
+                        renderHistory();
+
+                    }
+
+                    catch (error) {
+
+                        console.error(error);
+
+
+                        showStatus(
+                            status,
+                            "Unable to generate the hash.",
+                            "error"
+                        );
+
+                    }
+
+                }
+            );
+
+
+        document
+            .getElementById(
+                "clearText"
+            )
+            .addEventListener(
+                "click",
+                () => {
+
+                    document
+                        .getElementById(
+                            "textInput"
+                        )
+                        .value = "";
+
+
+                    latestTextHash =
+                        "";
+
+
+                    document
+                        .getElementById(
+                            "textHashOutput"
+                        )
+                        .innerHTML = `
+                            <span class="placeholder">
+                                Your generated hash will appear here...
+                            </span>
+                        `;
+
+
+                    document
+                        .getElementById(
+                            "textStatus"
+                        )
+                        .className =
+                        "status";
+
+                }
+            );
+
+
+        document
+            .getElementById(
+                "copyTextHash"
+            )
+            .addEventListener(
+                "click",
+                async () => {
+
+                    if (!latestTextHash) {
+
+                        return;
+
+                    }
+
+
+                    await navigator
+                        .clipboard
+                        .writeText(
+                            latestTextHash
+                        );
+
+
+                    showStatus(
+                        document.getElementById(
+                            "textStatus"
+                        ),
+                        "Hash copied to clipboard.",
+                        "success"
+                    );
+
+                }
+            );
+
+
+        document
+            .getElementById(
+                "downloadTextHash"
+            )
+            .addEventListener(
+                "click",
+                () => {
+
+                    if (!latestTextHash) {
+
+                        showStatus(
+                            document.getElementById(
+                                "textStatus"
+                            ),
+                            "Generate a hash before downloading.",
+                            "error"
+                        );
+
+                        return;
+
+                    }
+
+
+                    const algorithm =
+                        document.getElementById(
+                            "textAlgorithm"
+                        ).value;
+
+
+                    const content =
+                        "Algorithm: " +
+                        algorithm +
+                        "\nHash: " +
+                        latestTextHash;
+
+
+                    const blob =
+                        new Blob(
+                            [content],
+                            {
+                                type:
+                                    "text/plain"
+                            }
+                        );
+
+
+                    const url =
+                        URL.createObjectURL(
+                            blob
+                        );
+
+
+                    const link =
+                        document.createElement(
+                            "a"
+                        );
+
+
+                    link.href =
+                        url;
+
+
+                    link.download =
+                        "hash-result.txt";
+
+
+                    link.click();
+
+
+                    URL.revokeObjectURL(
+                        url
+                    );
+
+                }
+            );
+
+
+        /* =====================================================
+           FILE HASH
+        ===================================================== */
+
+        let latestFileHash = "";
+
+
+        document
+            .getElementById(
+                "fileInput"
+            )
+            .addEventListener(
+                "change",
+                event => {
+
+                    const file =
+                        event.target.files[0];
+
+
+                    document
+                        .getElementById(
+                            "fileName"
+                        )
+                        .textContent =
+                        file
+                            ? file.name
+                            : "No file selected";
+
+                }
+            );
+
+
+        document
+            .getElementById(
+                "generateFileHash"
+            )
+            .addEventListener(
+                "click",
+                async () => {
+
+                    const file =
+                        document
+                            .getElementById(
+                                "fileInput"
+                            )
+                            .files[0];
+
+
+                    const algorithm =
+                        document
+                            .getElementById(
+                                "fileAlgorithm"
+                            )
+                            .value;
+
+
+                    const status =
+                        document
+                            .getElementById(
+                                "fileStatus"
+                            );
+
+
+                    if (!file) {
+
+                        showStatus(
+                            status,
+                            "Please select a file first.",
+                            "error"
+                        );
+
+                        return;
+
+                    }
+
+
+                    try {
+
+                        const data =
+                            await file.arrayBuffer();
+
+
+                        const hash =
+                            await webCryptoHash(
+                                data,
+                                algorithm
+                            );
+
+
+                        latestFileHash =
+                            hash;
+
+
+                        document
+                            .getElementById(
+                                "fileHashOutput"
+                            )
+                            .textContent =
+                            hash;
+
+
+                        saveHistory(
+                            "File: " + file.name,
+                            file.name,
+                            algorithm,
+                            hash
+                        );
+
+
+                        showStatus(
+                            status,
+                            "File hash generated successfully.",
+                            "success"
+                        );
+
+
+                        renderHistory();
+
+                    }
+
+                    catch (error) {
+
+                        console.error(error);
+
+
+                        showStatus(
+                            status,
+                            "Unable to generate file hash.",
+                            "error"
+                        );
+
+                    }
+
+                }
+            );
+
+
+        document
+            .getElementById(
+                "copyFileHash"
+            )
+            .addEventListener(
+                "click",
+                async () => {
+
+                    if (!latestFileHash) {
+
+                        return;
+
+                    }
+
+
+                    await navigator
+                        .clipboard
+                        .writeText(
+                            latestFileHash
+                        );
+
+
+                    showStatus(
+                        document.getElementById(
+                            "fileStatus"
+                        ),
+                        "File hash copied.",
+                        "success"
+                    );
+
+                }
+            );
+
+
+        document
+            .getElementById(
+                "clearFile"
+            )
+            .addEventListener(
+                "click",
+                () => {
+
+                    document
+                        .getElementById(
+                            "fileInput"
+                        )
+                        .value = "";
+
+
+                    document
+                        .getElementById(
+                            "fileName"
+                        )
+                        .textContent =
+                        "No file selected";
+
+
+                    latestFileHash =
+                        "";
+
+
+                    document
+                        .getElementById(
+                            "fileHashOutput"
+                        )
+                        .innerHTML = `
+                            <span class="placeholder">
+                                File hash will appear here...
+                            </span>
+                        `;
+
+
+                    document
+                        .getElementById(
+                            "fileStatus"
+                        )
+                        .className =
+                        "status";
+
+                }
+            );
+
+
+        /* =====================================================
+           HASH COMPARISON
+        ===================================================== */
+
+        document
+            .getElementById(
+                "compareButton"
+            )
+            .addEventListener(
+                "click",
+                () => {
+
+                    const hash1 =
+                        document
+                            .getElementById(
+                                "hashOne"
+                            )
+                            .value
+                            .trim()
+                            .toLowerCase();
+
+
+                    const hash2 =
+                        document
+                            .getElementById(
+                                "hashTwo"
+                            )
+                            .value
+                            .trim()
+                            .toLowerCase();
+
+
+                    const result =
+                        document
+                            .getElementById(
+                                "comparisonResult"
+                            );
+
+
+                    if (!hash1 || !hash2) {
+
+                        result.className =
+                            "comparison-result no-match";
+
+
+                        result.textContent =
+                            "Please enter both hash values.";
+
+                        return;
+
+                    }
+
+
+                    if (hash1 === hash2) {
+
+                        result.className =
+                            "comparison-result match";
+
+
+                        result.textContent =
+                            "✓ MATCH — Both hash values are identical.";
+
+                    }
+
+                    else {
+
+                        result.className =
+                            "comparison-result no-match";
+
+
+                        result.textContent =
+                            "✗ MISMATCH — The hash values are different.";
+
+                    }
+
+                }
+            );
+
+
+        /* =====================================================
+           FILE VERIFICATION
+        ===================================================== */
+
+        document
+            .getElementById(
+                "verifyFile"
+            )
+            .addEventListener(
+                "change",
+                event => {
+
+                    const file =
+                        event.target.files[0];
+
+
+                    document
+                        .getElementById(
+                            "verifyFileName"
+                        )
+                        .textContent =
+                        file
+                            ? file.name
+                            : "No file selected";
+
+                }
+            );
+
+
+        document
+            .getElementById(
+                "verifyButton"
+            )
+            .addEventListener(
+                "click",
+                async () => {
+
+                    const file =
+                        document
+                            .getElementById(
+                                "verifyFile"
+                            )
+                            .files[0];
+
+
+                    const expected =
+                        document
+                            .getElementById(
+                                "expectedHash"
+                            )
+                            .value
+                            .trim()
+                            .toLowerCase();
+
+
+                    const algorithm =
+                        document
+                            .getElementById(
+                                "verifyAlgorithm"
+                            )
+                            .value;
+
+
+                    const result =
+                        document
+                            .getElementById(
+                                "verificationResult"
+                            );
+
+
+                    if (!file) {
+
+                        result.className =
+                            "comparison-result no-match";
+
+
+                        result.textContent =
+                            "Please select a file.";
+
+                        return;
+
+                    }
+
+
+                    if (!expected) {
+
+                        result.className =
+                            "comparison-result no-match";
+
+
+                        result.textContent =
+                            "Please enter the expected hash.";
+
+                        return;
+
+                    }
+
+
+                    try {
+
+                        const data =
+                            await file.arrayBuffer();
+
+
+                        const actual =
+                            (
+                                await webCryptoHash(
+                                    data,
+                                    algorithm
+                                )
+                            )
+                                .toLowerCase();
+
+
+                        if (
+                            actual === expected
+                        ) {
+
+                            result.className =
+                                "comparison-result match";
+
+
+                            result.innerHTML =
+                                `
+                                ✓ FILE INTEGRITY VERIFIED
+                                <br>
+                                <span style="font-size:12px;font-weight:normal;">
+                                    The generated hash matches the expected hash.
+                                </span>
+                                `;
+
+                        }
+
+                        else {
+
+                            result.className =
+                                "comparison-result no-match";
+
+
+                            result.innerHTML =
+                                `
+                                ✗ INTEGRITY CHECK FAILED
+                                <br>
+                                <span style="font-size:12px;font-weight:normal;">
+                                    The generated hash does not match the expected hash.
+                                </span>
+                                `;
+
+                        }
+
+                    }
+
+                    catch (error) {
+
+                        console.error(error);
+
+
+                        result.className =
+                            "comparison-result no-match";
+
+
+                        result.textContent =
+                            "Unable to verify the file.";
+
+                    }
+
+                }
+            );
+
+
+        document
+            .getElementById(
+                "clearVerify"
+            )
+            .addEventListener(
+                "click",
+                () => {
+
+                    document
+                        .getElementById(
+                            "verifyFile"
+                        )
+                        .value = "";
+
+
+                    document
+                        .getElementById(
+                            "verifyFileName"
+                        )
+                        .textContent =
+                        "No file selected";
+
+
+                    document
+                        .getElementById(
+                            "expectedHash"
+                        )
+                        .value = "";
+
+
+                    const result =
+                        document
+                            .getElementById(
+                                "verificationResult"
+                            );
+
+
+                    result.className =
+                        "comparison-result";
+
+
+                    result.textContent =
+                        "Verification result will appear here.";
+
+                }
+            );
+
+
+        /* =====================================================
+           PBKDF2 PASSWORD DERIVATION
+        ===================================================== */
+
+        let latestSalt = "";
+        let latestDerivedKey = "";
+
+
+        document
+            .getElementById(
+                "derivePassword"
+            )
+            .addEventListener(
+                "click",
+                async () => {
+
+                    const password =
+                        document
+                            .getElementById(
+                                "passwordInput"
+                            )
+                            .value;
+
+
+                    const iterations =
+                        Number(
+                            document
+                                .getElementById(
+                                    "passwordIterations"
+                                )
+                                .value
+                        );
+
+
+                    const status =
+                        document
+                            .getElementById(
+                                "passwordStatus"
+                            );
+
+
+                    if (!password) {
+
+                        showStatus(
+                            status,
+                            "Please enter a password.",
+                            "error"
+                        );
+
+                        return;
+
+                    }
+
+
+                    try {
+
+                        const saltBytes =
+                            new Uint8Array(16);
+
+
+                        crypto.getRandomValues(
+                            saltBytes
+                        );
+
+
+                        latestSalt =
+                            bufferToHex(
+                                saltBytes
+                            );
+
+
+                        const encoder =
+                            new TextEncoder();
+
+
+                        const passwordKey =
+                            await crypto.subtle.importKey(
+                                "raw",
+                                encoder.encode(
+                                    password
+                                ),
+                                {
+                                    name:
+                                        "PBKDF2"
+                                },
+                                false,
+                                [
+                                    "deriveBits"
+                                ]
+                            );
+
+
+                        const derivedBits =
+                            await crypto.subtle.deriveBits(
+                                {
+                                    name:
+                                        "PBKDF2",
+
+                                    salt:
+                                        saltBytes,
+
+                                    iterations:
+                                        iterations,
+
+                                    hash:
+                                        "SHA-256"
+                                },
+                                passwordKey,
+                                256
+                            );
+
+
+                        latestDerivedKey =
+                            bufferToHex(
+                                derivedBits
+                            );
+
+
+                        document
+                            .getElementById(
+                                "saltOutput"
+                            )
+                            .textContent =
+                            latestSalt;
+
+
+                        document
+                            .getElementById(
+                                "derivedOutput"
+                            )
+                            .textContent =
+                            latestDerivedKey;
+
+
+                        showStatus(
+                            status,
+                            "PBKDF2 key derived successfully.",
+                            "success"
+                        );
+
+                    }
+
+                    catch (error) {
+
+                        console.error(error);
+
+
+                        showStatus(
+                            status,
+                            "Unable to derive the key.",
+                            "error"
+                        );
+
+                    }
+
+                }
+            );
+
+
+        document
+            .getElementById(
+                "clearPassword"
+            )
+            .addEventListener(
+                "click",
+                () => {
+
+                    document
+                        .getElementById(
+                            "passwordInput"
+                        )
+                        .value = "";
+
+
+                    latestSalt =
+                        "";
+
+
+                    latestDerivedKey =
+                        "";
+
+
+                    document
+                        .getElementById(
+                            "saltOutput"
+                        )
+                        .innerHTML = `
+                            <span class="placeholder">
+                                Salt will appear here...
+                            </span>
+                        `;
+
+
+                    document
+                        .getElementById(
+                            "derivedOutput"
+                        )
+                        .innerHTML = `
+                            <span class="placeholder">
+                                Derived key will appear here...
+                            </span>
+                        `;
+
+
+                    document
+                        .getElementById(
+                            "passwordStatus"
+                        )
+                        .className =
+                        "status";
+
+                }
+            );
+
+
+        document
+            .getElementById(
+                "copySalt"
+            )
+            .addEventListener(
+                "click",
+                async () => {
+
+                    if (!latestSalt) {
+
+                        return;
+
+                    }
+
+
+                    await navigator
+                        .clipboard
+                        .writeText(
+                            latestSalt
+                        );
+
+
+                    showStatus(
+                        document.getElementById(
+                            "passwordStatus"
+                        ),
+                        "Salt copied.",
+                        "success"
+                    );
+
+                }
+            );
+
+
+        document
+            .getElementById(
+                "copyDerived"
+            )
+            .addEventListener(
+                "click",
+                async () => {
+
+                    if (!latestDerivedKey) {
+
+                        return;
+
+                    }
+
+
+                    await navigator
+                        .clipboard
+                        .writeText(
+                            latestDerivedKey
+                        );
+
+
+                    showStatus(
+                        document.getElementById(
+                            "passwordStatus"
+                        ),
+                        "Derived key copied.",
+                        "success"
+                    );
+
+                }
+            );
+
+
+        /* =====================================================
+           CLEAR HISTORY
+        ===================================================== */
+
+        document
+            .getElementById(
+                "clearHistory"
+            )
+            .addEventListener(
+                "click",
+                () => {
+
+                    localStorage.removeItem(
+                        HISTORY_KEY
+                    );
+
+
+                    renderHistory();
+
+                }
+            );
+
+
+        /* =====================================================
+           INITIALIZE
+        ===================================================== */
+
+        renderHistory();
+
+    </script>
+
+</body>
+
+</html>

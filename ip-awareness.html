@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cybersecurity Threat Detection &amp; Analysis System — IP Radar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #060A14;
+            --bg2: #0A1120;
+            --panel: rgba(10, 17, 32, 0.72);
+            --border: rgba(90, 150, 220, 0.16);
+            --grid: rgba(80, 140, 200, 0.07);
+            --dot: rgba(100, 180, 255, 0.4);
+            --cyan: #22E7C4;
+            --amber: #FFB238;
+            --red: #FF3E5E;
+            --violet: #9D7BFF;
+            --text: #DCE8F5;
+            --text-dim: #5E7A9E;
+            --text-dimmer: #3E5271;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            background: radial-gradient(ellipse at 50% 0%, var(--bg2) 0%, var(--bg) 70%);
+            color: var(--text);
+            font-family: 'IBM Plex Mono', monospace;
+            min-height: 100vh;
+        }
+
+        body {
+            background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+            background-size: 34px 34px;
+            padding: 20px;
+        }
+
+        .app {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            font-size: 18px;
+            letter-spacing: .4px;
+        }
+
+        .eyebrow {
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 20px;
+            margin-bottom: 16px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            flex-wrap: wrap;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-links a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--text);
+            background: rgba(34, 231, 196, 0.08);
+            border-color: rgba(34, 231, 196, 0.25);
+        }
+
+        .nav-links a.active {
+            color: var(--cyan);
+            background: rgba(34, 231, 196, 0.12);
+            border-color: rgba(34, 231, 196, 0.35);
+        }
+
+        .brand-mark {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(34, 231, 196, .18), rgba(34, 231, 196, .02));
+            border: 1px solid rgba(34, 231, 196, .4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .brand-mark::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--cyan);
+            box-shadow: 0 0 12px var(--cyan);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: .5;
+                transform: scale(.7);
+            }
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+
+        .panel-head {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* form */
+        .form-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding: 16px;
+        }
+
+        .field {
+            flex: 1;
+            min-width: 220px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .field input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 13px;
+            padding: 9px 12px;
+            outline: none;
+        }
+
+        .field input:focus {
+            border-color: var(--cyan);
+        }
+
+        .field .hint {
+            font-size: 10px;
+            color: var(--text-dimmer);
+            margin-top: 5px;
+        }
+
+        .btns {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        button {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 12px;
+            letter-spacing: .5px;
+            text-transform: uppercase;
+            background: rgba(34, 231, 196, 0.1);
+            color: var(--cyan);
+            border: 1px solid rgba(34, 231, 196, 0.4);
+            border-radius: 6px;
+            padding: 10px 16px;
+            cursor: pointer;
+            height: 38px;
+            transition: background .2s;
+        }
+
+        button:hover {
+            background: rgba(34, 231, 196, 0.2);
+        }
+
+        button.ghost {
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-dim);
+            border-color: var(--border);
+        }
+
+        .err {
+            color: var(--red);
+            font-size: 11px;
+            padding: 0 16px 12px;
+        }
+
+        /* pipeline */
+        .pipeline {
+            display: flex;
+            align-items: center;
+            padding: 34px 24px 44px;
+            overflow-x: auto;
+            gap: 0;
+        }
+
+        .stage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 120px;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .stage .node {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.02);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all .3s;
+        }
+
+        .stage.active .node {
+            border-color: var(--cyan);
+            background: rgba(34, 231, 196, 0.12);
+            box-shadow: 0 0 16px rgba(34, 231, 196, 0.25);
+        }
+
+        .stage .label {
+            font-size: 10px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 8px;
+        }
+
+        .stage .val {
+            font-size: 11px;
+            color: var(--text);
+            margin-top: 3px;
+            min-height: 14px;
+        }
+
+        .connector {
+            flex: 1;
+            min-width: 36px;
+            height: 2px;
+            background: var(--border);
+            position: relative;
+            margin-top: -38px;
+        }
+
+        .connector .packet {
+            position: absolute;
+            top: -3px;
+            left: 0;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--cyan);
+            box-shadow: 0 0 8px var(--cyan);
+            opacity: 0;
+        }
+
+        .observer-marker {
+            position: absolute;
+            top: -26px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            color: var(--red);
+            opacity: 0.85;
+        }
+
+        .observer-marker.flash {
+            animation: obsFlash .6s ease;
+        }
+
+        @keyframes obsFlash {
+            0% {
+                transform: translateX(-50%) scale(1);
+            }
+
+            50% {
+                transform: translateX(-50%) scale(1.7);
+                filter: drop-shadow(0 0 6px var(--red));
+            }
+
+            100% {
+                transform: translateX(-50%) scale(1);
+            }
+        }
+
+        /* two column */
+        .cols {
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width:880px) {
+            .cols {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .kv {
+            padding: 14px 16px;
+        }
+
+        .kv-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 7px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            font-size: 12px;
+        }
+
+        .kv-row:last-child {
+            border-bottom: none;
+        }
+
+        .kv-row .k {
+            color: var(--text-dim);
+        }
+
+        .kv-row .v {
+            color: var(--text);
+            text-align: right;
+        }
+
+        .badge {
+            display: inline-block;
+            font-size: 9px;
+            padding: 2px 7px;
+            border-radius: 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .badge.priv {
+            background: rgba(157, 123, 255, 0.15);
+            color: var(--violet);
+            border: 1px solid rgba(157, 123, 255, 0.35);
+        }
+
+        .badge.pub {
+            background: rgba(34, 231, 196, 0.15);
+            color: var(--cyan);
+            border: 1px solid rgba(34, 231, 196, 0.35);
+        }
+
+        .note {
+            font-size: 11px;
+            color: var(--text-dimmer);
+            padding: 0 16px 14px;
+            line-height: 1.5;
+        }
+
+        .headers-box {
+            margin: 0 16px 14px;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-size: 11px;
+            color: var(--text-dim);
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        /* map */
+        .map-wrap {
+            position: relative;
+        }
+
+        svg#map {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .legend {
+            position: absolute;
+            left: 16px;
+            bottom: 14px;
+            display: flex;
+            gap: 14px;
+            font-size: 10px;
+            color: var(--text-dim);
+            background: rgba(6, 10, 20, 0.6);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+
+        .legend span {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .legend i {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .country {
+            fill: rgba(40, 95, 150, 0.38);
+            stroke: rgba(120, 195, 255, 0.5);
+            stroke-width: 0.5;
+            transition: fill .2s;
+        }
+
+        .country:hover {
+            fill: rgba(34, 231, 196, 0.4);
+        }
+
+        .sphere-outline {
+            fill: rgba(12, 22, 42, 0.4);
+            stroke: rgba(120, 195, 255, 0.3);
+            stroke-width: 1;
+        }
+
+        .graticule-line {
+            fill: none;
+            stroke: rgba(90, 150, 220, 0.14);
+            stroke-width: 0.5;
+        }
+
+        .radar-ring {
+            fill: none;
+            stroke: rgba(34, 231, 196, 0.16);
+            stroke-width: 0.6;
+        }
+
+        .radar-cross {
+            stroke: rgba(34, 231, 196, 0.12);
+            stroke-width: 0.6;
+        }
+
+        .map-tooltip {
+            position: absolute;
+            pointer-events: none;
+            background: rgba(6, 10, 20, 0.9);
+            border: 1px solid rgba(120, 195, 255, 0.4);
+            color: var(--text);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 11px;
+            padding: 4px 9px;
+            border-radius: 5px;
+            opacity: 0;
+            transform: translate(0, -4px);
+            transition: opacity .1s ease;
+            white-space: nowrap;
+            z-index: 5;
+        }
+
+        footer {
+            margin-top: 4px;
+            padding: 12px 18px;
+            text-align: center;
+            font-size: 10.5px;
+            color: var(--text-dimmer);
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+
+        <header>
+            <div class="header-brand">
+                <div class="brand-mark"></div>
+                <div>
+                    <h1>Cybersecurity Threat Detection &amp; Analysis System</h1>
+                    <div class="eyebrow">IP Awareness &amp; Network Routing</div>
+                </div>
+            </div>
+            <nav class="nav-links">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="scanner.html">Scanner</a>
+                <a href="chatbot.html">AI Assistant</a>
+                <a href="ip-awareness.html" class="active">IP Awareness</a>
+            </nav>
+        </header>
+
+        <div class="panel">
+            <div class="panel-head"><span>Trace a request</span></div>
+            <div class="form-row">
+                <div class="field">
+                    <label>Your device's local IP</label>
+                    <input id="privIp" type="text" placeholder="192.168.1.42" value="192.168.1.42" />
+                    <div class="hint">A private address, only meaningful inside your home/office network.</div>
+                </div>
+                <div class="field">
+                    <label>Destination (domain or IP)</label>
+                    <input id="destHost" type="text" placeholder="example.com" value="example.com" />
+                    <div class="hint">The web server your device is talking to.</div>
+                </div>
+                <div class="btns">
+                    <button id="traceBtn">Run trace</button>
+                    <button id="useMyIpBtn" class="ghost">Use my real public IP</button>
+                </div>
+            </div>
+            <div class="err" id="errBox"></div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-head"><span>Request path</span><span id="stageLabel"
+                    style="color:var(--text-dim)">idle</span></div>
+            <div class="pipeline" id="pipeline"></div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-head">
+                <span>Adversary / network observer view</span>
+                <label
+                    style="display:flex; align-items:center; gap:6px; font-size:10px; color:var(--text-dim); text-transform:none; letter-spacing:0;">
+                    <input type="checkbox" id="httpsToggle" checked style="width:auto;" /> assume HTTPS
+                </label>
+            </div>
+            <div class="note" style="padding-top:14px;">
+                An adversary here isn't "notified" of anything — they're simply positioned somewhere your traffic
+                physically passes: a shared public Wi-Fi network, a compromised or malicious router, or anyone with
+                visibility into ISP-level traffic. They watch packets as they pass, in both directions, in real time.
+            </div>
+            <div class="headers-box" id="observerLog" style="min-height:40px;">Run a trace to see what a passive
+                observer on the path would capture…</div>
+        </div>
+
+        <div class="cols">
+            <div class="panel">
+                <div class="panel-head"><span>What the destination server sees</span></div>
+                <div class="kv" id="exposureBox">
+                    <div class="kv-row"><span class="k">Public IP</span><span class="v">—</span></div>
+                    <div class="kv-row"><span class="k">Network / ISP</span><span class="v">—</span></div>
+                    <div class="kv-row"><span class="k">Approx. location</span><span class="v">—</span></div>
+                    <div class="kv-row"><span class="k">Coordinates</span><span class="v">—</span></div>
+                </div>
+                <div class="note">A server (or anyone logging its traffic) only ever sees your <b>public</b> IP — never
+                    your private/local one. Geolocation from IP is <b>city-level at best</b>, often wrong, and never
+                    reveals a precise address, name, or device.</div>
+                <div class="headers-box" id="headersBox">Run a trace to see a sample request header…</div>
+            </div>
+
+            <div class="panel map-wrap">
+                <div class="panel-head"><span>Approximate exposure map</span></div>
+                <svg id="map" viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <radialGradient id="sweepFade" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="rgba(34,231,196,0.25)" />
+                            <stop offset="60%" stop-color="rgba(34,231,196,0.03)" />
+                            <stop offset="100%" stop-color="rgba(34,231,196,0)" />
+                        </radialGradient>
+                        <filter id="glow" x="-100%" y="-100%" width="300%" height="300%">
+                            <feGaussianBlur stdDeviation="2.2" result="b" />
+                            <feMerge>
+                                <feMergeNode in="b" />
+                                <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    <circle cx="500" cy="250" r="230" fill="url(#sweepFade)" opacity="0.5" />
+                    <g id="sphereOutline"></g>
+                    <g id="graticule" class="graticule-line"></g>
+                    <g id="radarRings"></g>
+                    <g id="countries"></g>
+                    <g id="radarSweep"></g>
+                    <g id="arcLayer"></g>
+                    <g id="pinLayer"></g>
+                </svg>
+                <div id="mapTooltip" class="map-tooltip"></div>
+                <div class="legend">
+                    <span><i style="background:var(--cyan)"></i>You (approx.)</span>
+                    <span><i style="background:var(--amber)"></i>Destination server</span>
+                    <span><i style="background:var(--cyan)"></i>Request path</span>
+                    <span><i style="background:var(--amber)"></i>Response path</span>
+                    <span><i style="background:var(--red)"></i>Observer point</span>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            Lookups use ipify.org (your public IP) and ipapi.co (approximate IP/host geolocation) — free public APIs,
+            called directly from your browser. World borders are real, from the public-domain Natural Earth dataset
+            (via world-atlas), rendered client-side with D3.<br />
+            For a production project, proxy these calls through your own backend to hide rate limits and add caching.
+            Approximate location data should never be treated as precise or used for access control.
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
+    <script>
+        (function () {
+            var W = 1000, H = 500;
+            var pinLayer = document.getElementById('pinLayer');
+            var arcLayer = document.getElementById('arcLayer');
+
+            var svgNS = 'http://www.w3.org/2000/svg';
+
+            /* ---- real projection driving both the world map and every pin/arc placed on it ---- */
+            var projection = d3.geoNaturalEarth1().fitSize([W, H], { type: 'Sphere' });
+            var geoPath = d3.geoPath(projection);
+
+            function project(lat, lon) {
+                var p = projection([lon, lat]);
+                return p || [W / 2, H / 2];
+            }
+
+            // radar chrome: rings, crosshair, rotating sweep, lat/lon grid, globe edge — none of this needs map data
+            (function drawRadarChrome() {
+                var ringsG = document.getElementById('radarRings');
+                [60, 115, 170, 225].forEach(function (r) {
+                    var c = document.createElementNS(svgNS, 'circle');
+                    c.setAttribute('cx', 500); c.setAttribute('cy', 250); c.setAttribute('r', r);
+                    c.setAttribute('class', 'radar-ring');
+                    ringsG.appendChild(c);
+                });
+                var h = document.createElementNS(svgNS, 'line');
+                h.setAttribute('x1', 270); h.setAttribute('y1', 250); h.setAttribute('x2', 730); h.setAttribute('y2', 250);
+                h.setAttribute('class', 'radar-cross');
+                var v = document.createElementNS(svgNS, 'line');
+                v.setAttribute('x1', 500); v.setAttribute('y1', 20); v.setAttribute('x2', 500); v.setAttribute('y2', 480);
+                v.setAttribute('class', 'radar-cross');
+                ringsG.appendChild(h); ringsG.appendChild(v);
+
+                var sweepG = document.getElementById('radarSweep');
+                var wedge = document.createElementNS(svgNS, 'path');
+                wedge.setAttribute('d', 'M500,250 L500,20 A230,230 0 0,1 588,48 Z');
+                wedge.setAttribute('fill', 'rgba(34,231,196,0.14)');
+                var hand = document.createElementNS(svgNS, 'line');
+                hand.setAttribute('x1', 500); hand.setAttribute('y1', 250); hand.setAttribute('x2', 500); hand.setAttribute('y2', 20);
+                hand.setAttribute('stroke', 'rgba(34,231,196,0.55)'); hand.setAttribute('stroke-width', '1.3');
+                hand.setAttribute('filter', 'url(#glow)');
+                var anim = document.createElementNS(svgNS, 'animateTransform');
+                anim.setAttribute('attributeName', 'transform'); anim.setAttribute('type', 'rotate');
+                anim.setAttribute('from', '0 500 250'); anim.setAttribute('to', '360 500 250');
+                anim.setAttribute('dur', '7s'); anim.setAttribute('repeatCount', 'indefinite');
+                sweepG.appendChild(wedge); sweepG.appendChild(hand); sweepG.appendChild(anim);
+
+                var graticuleG = document.getElementById('graticule');
+                var gPath = document.createElementNS(svgNS, 'path');
+                gPath.setAttribute('d', geoPath(d3.geoGraticule().step([20, 20])()));
+                graticuleG.appendChild(gPath);
+
+                var sphereG = document.getElementById('sphereOutline');
+                var sPath = document.createElementNS(svgNS, 'path');
+                sPath.setAttribute('d', geoPath({ type: 'Sphere' }));
+                sPath.setAttribute('class', 'sphere-outline');
+                sphereG.appendChild(sPath);
+            })();
+
+            // real country borders from a public world-atlas dataset; if the CDN can't be
+            // reached (e.g. an offline/sandboxed preview) fall back to a stylised dot map
+            var countriesG = document.getElementById('countries');
+            function drawFallbackDots() {
+                var regions = [
+                    { cx: 150, cy: 140, rx: 120, ry: 80, n: 60 }, { cx: 170, cy: 215, rx: 35, ry: 22, n: 12 },
+                    { cx: 250, cy: 340, rx: 65, ry: 105, n: 52 }, { cx: 480, cy: 105, rx: 55, ry: 35, n: 30 },
+                    { cx: 630, cy: 80, rx: 150, ry: 34, n: 40 }, { cx: 560, cy: 165, rx: 42, ry: 28, n: 18 },
+                    { cx: 500, cy: 270, rx: 75, ry: 118, n: 60 }, { cx: 720, cy: 138, rx: 135, ry: 62, n: 68 },
+                    { cx: 716, cy: 200, rx: 28, ry: 44, n: 28 },
+                    { cx: 740, cy: 250, rx: 58, ry: 38, n: 26 }, { cx: 830, cy: 350, rx: 55, ry: 34, n: 24 }
+                ];
+                regions.forEach(function (r) {
+                    for (var i = 0; i < r.n; i++) {
+                        var a = Math.random() * Math.PI * 2, bump = 0.72 + 0.28 * Math.sin(a * 3 + r.cx) + 0.15 * Math.random(), rad = Math.random();
+                        var x = r.cx + Math.cos(a) * r.rx * rad * bump, y = r.cy + Math.sin(a) * r.ry * rad * bump;
+                        var c = document.createElementNS(svgNS, 'circle');
+                        c.setAttribute('cx', x.toFixed(1)); c.setAttribute('cy', y.toFixed(1));
+                        c.setAttribute('r', (0.9 + Math.random() * 0.7).toFixed(2)); c.setAttribute('fill', 'rgba(100,180,255,0.4)');
+                        countriesG.appendChild(c);
+                    }
+                });
+                // switch pin placement to the old lon/lat formula so pins line up with the fallback dots
+                project = function (lat, lon) {
+                    return [(lon + 180) / 360 * W, (90 - lat) / 180 * H];
+                };
+            }
+            fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+                .then(function (r) { if (!r.ok) throw new Error('atlas http ' + r.status); return r.json(); })
+                .then(function (world) {
+                    var features = topojson.feature(world, world.objects.countries).features;
+                    features.forEach(function (f) {
+                        var d = geoPath(f);
+                        if (!d) return;
+                        var p = document.createElementNS(svgNS, 'path');
+                        p.setAttribute('d', d);
+                        p.setAttribute('class', 'country');
+                        p.dataset.name = (f.properties && (f.properties.name || f.properties.NAME)) || 'Unknown';
+                        countriesG.appendChild(p);
+                    });
+                })
+                .catch(function () { drawFallbackDots(); });
+
+            // hover tooltip — shows the country name the moment the cursor is over/near it, no click needed
+            (function setupHoverTooltip() {
+                var mapWrap = document.querySelector('.map-wrap');
+                var tooltip = document.getElementById('mapTooltip');
+                var mapSvg = document.getElementById('map');
+                mapSvg.addEventListener('mousemove', function (e) {
+                    var target = e.target.closest ? e.target.closest('.country') : null;
+                    if (target && target.dataset.name) {
+                        var rect = mapWrap.getBoundingClientRect();
+                        tooltip.textContent = target.dataset.name;
+                        tooltip.style.opacity = '1';
+                        tooltip.style.left = (e.clientX - rect.left + 14) + 'px';
+                        tooltip.style.top = (e.clientY - rect.top - 10) + 'px';
+                    } else {
+                        tooltip.style.opacity = '0';
+                    }
+                });
+                mapSvg.addEventListener('mouseleave', function () { tooltip.style.opacity = '0'; });
+            })();
+
+            function placePin(lat, lon, color, label) {
+                var p = project(lat, lon);
+                var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                var ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                ring.setAttribute('cx', p[0]); ring.setAttribute('cy', p[1]); ring.setAttribute('r', '3.4');
+                ring.setAttribute('fill', 'none'); ring.setAttribute('stroke', color); ring.setAttribute('stroke-width', '1.4');
+                ring.setAttribute('filter', 'url(#glow)');
+                var dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                dot.setAttribute('cx', p[0]); dot.setAttribute('cy', p[1]); dot.setAttribute('r', '2.2');
+                dot.setAttribute('fill', color); dot.setAttribute('filter', 'url(#glow)');
+                var text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', p[0] + 8); text.setAttribute('y', p[1] - 6);
+                text.setAttribute('fill', color); text.setAttribute('font-size', '9'); text.setAttribute('font-family', 'IBM Plex Mono, monospace');
+                text.textContent = label;
+                g.appendChild(ring); g.appendChild(dot); g.appendChild(text);
+                pinLayer.appendChild(g);
+                return p;
+            }
+
+            function drawTwoWayArcs(p1, p2, reqColor, resColor) {
+                var mx = (p1[0] + p2[0]) / 2, my = (p1[1] + p2[1]) / 2;
+                var dist = Math.hypot(p2[0] - p1[0], p2[1] - p1[1]);
+                var lift = Math.min(90, dist * 0.3);
+
+                // request line: You -> Server, curves upward
+                var dReq = 'M' + p1[0] + ',' + p1[1] + ' Q' + mx + ',' + (my - lift) + ' ' + p2[0] + ',' + p2[1];
+                // response line: Server -> You, curves downward so the two paths are visually distinct
+                var dRes = 'M' + p2[0] + ',' + p2[1] + ' Q' + mx + ',' + (my + lift) + ' ' + p1[0] + ',' + p1[1];
+
+                [[dReq, reqColor, 2.4], [dRes, resColor, 3.6]].forEach(function (cfg) {
+                    var d = cfg[0], color = cfg[1], dashOffset = cfg[2];
+                    var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    path.setAttribute('d', d); path.setAttribute('fill', 'none'); path.setAttribute('stroke', color);
+                    path.setAttribute('stroke-width', '1.6'); path.setAttribute('opacity', '0.9'); path.setAttribute('filter', 'url(#glow)');
+                    path.setAttribute('stroke-dasharray', '5 4');
+                    arcLayer.appendChild(path);
+
+                    var pulse = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    pulse.setAttribute('r', '2.6'); pulse.setAttribute('fill', color); pulse.setAttribute('filter', 'url(#glow)');
+                    var motion = document.createElementNS('http://www.w3.org/2000/svg', 'animateMotion');
+                    motion.setAttribute('dur', '2.6s'); motion.setAttribute('repeatCount', 'indefinite');
+                    motion.setAttribute('begin', dashOffset + 's'); motion.setAttribute('path', d);
+                    pulse.appendChild(motion);
+                    arcLayer.appendChild(pulse);
+                });
+
+                // observer marker roughly on the path, between the two endpoints
+                var ox = mx, oy = my - lift * 0.15;
+                var og = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                var oring = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                oring.setAttribute('cx', ox); oring.setAttribute('cy', oy); oring.setAttribute('r', '9');
+                oring.setAttribute('fill', 'rgba(255,62,94,0.08)'); oring.setAttribute('stroke', '#FF3E5E'); oring.setAttribute('stroke-width', '1');
+                var otext = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                otext.setAttribute('x', ox); otext.setAttribute('y', oy + 3); otext.setAttribute('text-anchor', 'middle');
+                otext.setAttribute('font-size', '9'); otext.setAttribute('fill', '#FF3E5E'); otext.textContent = '\u{1F441}';
+                og.appendChild(oring); og.appendChild(otext);
+                arcLayer.appendChild(og);
+            }
+
+            /* ---------- pipeline ---------- */
+            var stagesDef = [
+                { icon: '\u{1F4BB}', label: 'Device' },
+                { icon: '\u{1F4E1}', label: 'Router (NAT)' },
+                { icon: '\u{1F3E2}', label: 'ISP' },
+                { icon: '\u{1F310}', label: 'Internet' },
+                { icon: '\u{1F5A5}', label: 'Web server' }
+            ];
+            var pipelineEl = document.getElementById('pipeline');
+            var stageNodes = [], connectors = [];
+            stagesDef.forEach(function (s, i) {
+                var stage = document.createElement('div'); stage.className = 'stage';
+                stage.innerHTML = '<div class="node">' + s.icon + '</div><div class="label">' + s.label + '</div><div class="val">—</div>';
+                pipelineEl.appendChild(stage); stageNodes.push(stage);
+                if (i < stagesDef.length - 1) {
+                    var conn = document.createElement('div'); conn.className = 'connector';
+                    conn.innerHTML = '<div class="packet"></div>';
+                    if (i === 1) { conn.innerHTML += '<div class="observer-marker" id="observerMarker" title="Common place for a passive observer: shared network, malicious router, or ISP-level visibility">\u{1F441}\uFE0F</div>'; }
+                    pipelineEl.appendChild(conn); connectors.push(conn);
+                }
+            });
+
+            function setStageVal(i, v) { stageNodes[i].querySelector('.val').textContent = v; }
+            function activate(i) { stageNodes.forEach(function (s, idx) { s.classList.toggle('active', idx === i); }); }
+            function movePacket(connIdx, reverse) {
+                return new Promise(function (resolve) {
+                    var p = connectors[connIdx].querySelector('.packet');
+                    p.style.transition = 'none'; p.style.opacity = '1';
+                    p.style.left = reverse ? '100%' : '0%';
+                    requestAnimationFrame(function () {
+                        p.style.transition = 'left 1.1s linear';
+                        p.style.left = reverse ? '0%' : '100%';
+                    });
+                    setTimeout(function () { p.style.opacity = '0'; resolve(); }, 1150);
+                });
+            }
+            function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+            /* ---------- observer / adversary log ---------- */
+            var observerLog = document.getElementById('observerLog');
+            var observerMarker = document.getElementById('observerMarker');
+            var observerEntries = [];
+            function flashObserver() {
+                if (!observerMarker) return;
+                observerMarker.classList.remove('flash'); void observerMarker.offsetWidth;
+                observerMarker.classList.add('flash');
+            }
+            function logObserver(direction, srcIp, srcLoc, dstIp, dstLoc, sizeBytes) {
+                flashObserver();
+                var https = document.getElementById('httpsToggle').checked;
+                var ts = new Date().toISOString().substr(11, 8);
+                var visibility = https
+                    ? 'Content encrypted (TLS) — only metadata below is visible. The hostname (' + dstIp + ') still leaks via the TLS SNI field even though the page content does not.'
+                    : 'No encryption (plain HTTP) — full request/response content, including any form data, would be readable in plain text.';
+                observerEntries.unshift(
+                    '[' + ts + '] ' + direction + '\n' +
+                    '  src: ' + srcIp + '  (' + srcLoc + ')\n' +
+                    '  dst: ' + dstIp + '  (' + dstLoc + ')\n' +
+                    '  size: ~' + sizeBytes + ' bytes   protocol: TCP/443\n' +
+                    '  ' + visibility
+                );
+                observerEntries = observerEntries.slice(0, 6);
+                observerLog.textContent = observerEntries.join('\n\n');
+            }
+
+            /* ---------- IP helpers ---------- */
+            function isPrivate(ip) {
+                var m = ip.trim().match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+                if (!m) return null;
+                var a = +m[1], b = +m[2];
+                if (a === 10) return true;
+                if (a === 172 && b >= 16 && b <= 31) return true;
+                if (a === 192 && b === 168) return true;
+                if (a === 127) return true;
+                return false;
+            }
+
+            // Deterministic demo fallback, used only if all live providers are unreachable
+            // (e.g. previewed inside a sandboxed iframe that blocks outbound requests).
+            var demoCities = [
+                { city: 'Ashburn', region: 'Virginia', country_name: 'United States', latitude: 39.04, longitude: -77.49, org: 'Demo ISP' },
+                { city: 'Frankfurt', region: 'Hesse', country_name: 'Germany', latitude: 50.11, longitude: 8.68, org: 'Demo ISP' },
+                { city: 'Singapore', region: 'Singapore', country_name: 'Singapore', latitude: 1.35, longitude: 103.82, org: 'Demo ISP' },
+                { city: 'Mumbai', region: 'Maharashtra', country_name: 'India', latitude: 19.08, longitude: 72.88, org: 'Demo ISP' },
+                { city: 'Sao Paulo', region: 'Sao Paulo', country_name: 'Brazil', latitude: -23.55, longitude: -46.63, org: 'Demo ISP' },
+                { city: 'Sydney', region: 'NSW', country_name: 'Australia', latitude: -33.87, longitude: 151.21, org: 'Demo ISP' }
+            ];
+            function hashStr(s) { var h = 0; for (var i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) >>> 0; } return h; }
+            function demoGeoFor(query) {
+                var pick = demoCities[hashStr(query) % demoCities.length];
+                return { ip: 'demo:' + query, city: pick.city, region: pick.region, country_name: pick.country_name, org: pick.org, latitude: pick.latitude, longitude: pick.longitude, _demo: true };
+            }
+
+            async function fetchMyPublicIp() {
+                var r = await fetch('https://api.ipify.org?format=json');
+                if (!r.ok) throw new Error('ipify failed');
+                var j = await r.json();
+                return j.ip;
+            }
+
+            // Primary provider: ipapi.co (resolves hostnames too, but has a low free-tier rate limit)
+            async function fetchGeoIpapi(query) {
+                var r = await fetch('https://ipapi.co/' + encodeURIComponent(query) + '/json/');
+                if (!r.ok) throw new Error('ipapi.co http ' + r.status);
+                var j = await r.json();
+                if (j.error) throw new Error(j.reason || 'ipapi.co lookup failed');
+                if (j.latitude == null || j.longitude == null) throw new Error('ipapi.co: no coordinates');
+                return { ip: j.ip, city: j.city, region: j.region, country_name: j.country_name, org: j.org, latitude: j.latitude, longitude: j.longitude };
+            }
+
+            // Fallback provider: ipwho.is (generous free limits, different field names)
+            async function fetchGeoIpwhois(query) {
+                var r = await fetch('https://ipwho.is/' + encodeURIComponent(query));
+                if (!r.ok) throw new Error('ipwho.is http ' + r.status);
+                var j = await r.json();
+                if (j.success === false) throw new Error(j.message || 'ipwho.is lookup failed');
+                if (j.latitude == null || j.longitude == null) throw new Error('ipwho.is: no coordinates');
+                return { ip: j.ip, city: j.city, region: j.region, country_name: j.country, org: (j.connection && j.connection.isp) || '', latitude: j.latitude, longitude: j.longitude };
+            }
+
+            // Tries both providers, returns the first that succeeds
+            async function fetchGeo(query) {
+                try { return await fetchGeoIpapi(query); }
+                catch (e1) {
+                    try { return await fetchGeoIpwhois(query); }
+                    catch (e2) { throw new Error('Both geolocation providers failed: ' + e1.message + ' / ' + e2.message); }
+                }
+            }
+
+            /* ---------- main trace flow ---------- */
+            var errBox = document.getElementById('errBox');
+            var stageLabel = document.getElementById('stageLabel');
+            var traceBtn = document.getElementById('traceBtn');
+
+            document.getElementById('useMyIpBtn').addEventListener('click', async function () {
+                errBox.textContent = '';
+                this.disabled = true; this.textContent = 'Detecting…';
+                try {
+                    var ip = await fetchMyPublicIp();
+                    document.getElementById('privIp').value = '192.168.1.42';
+                    alert('Your real public IP is ' + ip + '. Click "Run trace" to see it flow through the pipeline (it will appear at the Router/ISP/Internet/Server stages, since your device itself only knows its private IP).');
+                } catch (e) { errBox.textContent = 'Could not detect your public IP (network blocked or offline preview).'; }
+                this.disabled = false; this.textContent = 'Use my real public IP';
+            });
+
+            traceBtn.addEventListener('click', runTrace);
+
+            async function runTrace() {
+                errBox.textContent = '';
+                var privIp = document.getElementById('privIp').value.trim();
+                var destHost = document.getElementById('destHost').value.trim();
+                if (!privIp || !destHost) { errBox.textContent = 'Enter both a local IP and a destination.'; return; }
+
+                traceBtn.disabled = true; traceBtn.textContent = 'Tracing…';
+                stageNodes.forEach(function (s) { s.querySelector('.val').textContent = '—'; });
+                pinLayer.innerHTML = ''; arcLayer.innerHTML = '';
+
+                var priv = isPrivate(privIp);
+                if (priv === null) { errBox.textContent = 'That doesn\'t look like a valid IPv4 address.'; traceBtn.disabled = false; traceBtn.textContent = 'Run trace'; return; }
+
+                // Stage 0: device
+                activate(0); stageLabel.textContent = 'device sends request';
+                setStageVal(0, privIp + (priv ? ' (private)' : ' (already public)'));
+                await wait(650);
+
+                // fetch public ip + geo (in parallel with animation)
+                var publicIp = null, geo = null, destGeo = null, geoErr = false, usedDemo = false;
+                var geoPromise = (async function () {
+                    try {
+                        publicIp = priv ? await fetchMyPublicIp() : privIp;
+                    } catch (e) { publicIp = priv ? '203.0.113.' + (hashStr(privIp) % 250) : privIp; usedDemo = true; }
+                    try {
+                        geo = await fetchGeo(publicIp);
+                    } catch (e) { geo = demoGeoFor(publicIp); usedDemo = true; }
+                    try {
+                        destGeo = await fetchGeo(destHost);
+                    } catch (e) { destGeo = demoGeoFor(destHost); usedDemo = true; }
+                })();
+
+                // Stage 1: router / NAT
+                await movePacket(0, false);
+                activate(1); stageLabel.textContent = priv ? 'router performs NAT' : 'router forwards (already public)';
+                await wait(300);
+                await geoPromise; // ensure we have publicIp by the time we display it
+                setStageVal(1, publicIp ? publicIp : '…');
+
+                // Stage 2: ISP  (packet passes the observer point on this hop)
+                await movePacket(1, false);
+                activate(2); stageLabel.textContent = 'ISP routes packet';
+                setStageVal(2, geo && geo.org ? geo.org : (geoErr ? 'lookup blocked' : '…'));
+                logObserver('REQUEST  → device to server',
+                    publicIp || '(pending)', geo ? [geo.city, geo.country_name].filter(Boolean).join(', ') : 'unknown',
+                    destHost, destGeo ? [destGeo.city, destGeo.country_name].filter(Boolean).join(', ') : 'unknown',
+                    420 + Math.round(hashStr(privIp + 'r') % 400));
+
+                // Stage 3: Internet
+                await movePacket(2, false);
+                activate(3); stageLabel.textContent = 'crosses the internet';
+                setStageVal(3, destGeo ? (destGeo.ip || destHost) : destHost);
+
+                // Stage 4: server
+                await movePacket(3, false);
+                activate(4); stageLabel.textContent = 'server receives request';
+                setStageVal(4, destGeo && destGeo.city ? (destGeo.city + ', ' + (destGeo.country_name || '')) : destHost);
+                await wait(500);
+
+                // response back
+                stageLabel.textContent = 'server sends response';
+                await wait(300);
+                await movePacket(3, true);
+                activate(3);
+                await wait(200);
+                await movePacket(2, true);
+                activate(2);
+                await wait(200);
+                await movePacket(1, true);
+                activate(1);
+                logObserver('RESPONSE → server to device',
+                    destHost, destGeo ? [destGeo.city, destGeo.country_name].filter(Boolean).join(', ') : 'unknown',
+                    publicIp || '(pending)', geo ? [geo.city, geo.country_name].filter(Boolean).join(', ') : 'unknown',
+                    8000 + Math.round(hashStr(destHost + 's') % 60000));
+                await wait(200);
+                await movePacket(0, true);
+                activate(0);
+                stageLabel.textContent = 'response delivered to device';
+
+                // exposure panel
+                var exposureBox = document.getElementById('exposureBox');
+                if (usedDemo) {
+                    errBox.innerHTML = 'Live lookups were blocked in this preview (sandboxed network) — showing demo data below. Open the downloaded file directly in a browser for real results.';
+                }
+                if (geo) {
+                    exposureBox.innerHTML =
+                        '<div class="kv-row"><span class="k">Public IP</span><span class="v">' + geo.ip + ' <span class="badge pub">' + (geo._demo ? 'demo' : 'public') + '</span></span></div>' +
+                        '<div class="kv-row"><span class="k">Network / ISP</span><span class="v">' + (geo.org || 'unknown') + '</span></div>' +
+                        '<div class="kv-row"><span class="k">Approx. location</span><span class="v">' + [geo.city, geo.region, geo.country_name].filter(Boolean).join(', ') + '</span></div>' +
+                        '<div class="kv-row"><span class="k">Coordinates</span><span class="v">' + (geo.latitude && geo.longitude ? geo.latitude.toFixed(2) + ', ' + geo.longitude.toFixed(2) : 'unavailable') + '</span></div>' +
+                        (priv ? '<div class="kv-row"><span class="k">Your local IP</span><span class="v">' + privIp + ' <span class="badge priv">private — never seen by the server</span></span></div>' : '') +
+                        (destGeo ? '<div class="kv-row"><span class="k">Destination location</span><span class="v">' + [destGeo.city, destGeo.region, destGeo.country_name].filter(Boolean).join(', ') + (destGeo._demo ? ' <span class="badge pub">demo</span>' : '') + '</span></div>' : '');
+                } else {
+                    exposureBox.innerHTML = '<div class="kv-row"><span class="k">Lookup</span><span class="v">unavailable</span></div>';
+                }
+
+                document.getElementById('headersBox').textContent =
+                    'GET / HTTP/1.1\nHost: ' + destHost + '\nUser-Agent: Mozilla/5.0 (...)\nX-Forwarded-For: ' + (publicIp || '(your public IP)') + '\nAccept: text/html';
+
+                // map — always draw, using live data when available and demo data otherwise
+                if (geo && geo.latitude && geo.longitude) {
+                    var p1 = placePin(geo.latitude, geo.longitude, '#22E7C4', geo._demo ? 'You (demo)' : 'You');
+                    if (destGeo && destGeo.latitude && destGeo.longitude) {
+                        var p2 = placePin(destGeo.latitude, destGeo.longitude, '#FFB238', destGeo._demo ? destHost + ' (demo)' : destHost);
+                        drawTwoWayArcs(p1, p2, '#22E7C4', '#FFB238');
+                    }
+                }
+
+                traceBtn.disabled = false; traceBtn.textContent = 'Run trace';
+            }
+        })();
+    </script>
+</body>
+
+</html>
